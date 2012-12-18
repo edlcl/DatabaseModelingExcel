@@ -8,6 +8,9 @@ Option Explicit
 Dim verbose
 verbose = true
 
+Dim fsoStandard, console
+Set fsoStandard = CreateObject ("Scripting.FileSystemObject")
+Set console = fsoStandard.GetStandardStream (1)
 '------------------------------------------------------------------------------------------------
 '-- Declare Current Version
 Dim sMajorVersion, sMinorVersion, sRevisionNumber, sReleaseType
@@ -74,51 +77,60 @@ sOutput_Template_SQLite_Fullname = sOutput_ResourceFolder & sTemplate_SQLite & "
 
 '-- Declare Constants for compress
 Dim sZipApp
-sZipApp = "C:\Program Files\7-Zip\7z.exe"
+sZipApp = "C:\Program Files (x86)\7-Zip\7z.exe"
 
 '------------------------------------------------------------------------------------------------
 Dim fso
 Set fso = CreateObject("Scripting.FileSystemObject")
 
-' delete ouput folder
+'  delete ouput folder
+console.WriteLine  "Deleting ouput folder..."
 If (fso.FolderExists(sOutputFolder)) Then
     Call fso.DeleteFolder(sOutputFolder, true)
 End If
 
 ' create output folder
+console.WriteLine  "Creating output folders..."
 Dim f
 Set f = fso.CreateFolder(sOutputFolder)
 Set f = fso.CreateFolder(sMacroFolder)
 Set f = fso.CreateFolder(sOutput_ResourceFolder)
 Set f = fso.CreateFolder(sDeployFolder)
+
 ' export macros
+console.WriteLine  "Exporting all macro files..."
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sSourceExcelFilename) & """ -m ""VBComponent_ExportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """"
+
 ' copy resouces
+console.WriteLine  "Copying templates..."
 fso.CopyFolder fso.GetAbsolutePathName(sResourcePath), fso.GetAbsolutePathName(sOutput_ResourceFolder)
-Call fso.DeleteFolder(fso.GetAbsolutePathName(sOutput_ResourceFolder & ".svn"), true)
-CAll fso.DeleteFolder(fso.GetAbsolutePathName(sOutput_ResourceFolder & "Doc\.svn"), true)
-CAll fso.DeleteFolder(fso.GetAbsolutePathName(sOutput_ResourceFolder & "Tools\.svn"), true)
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_SQLServer_Fullname), fso.GetAbsolutePathName(sOutput_Template_SQLServer_Fullname)
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_MySQL_Fullname), fso.GetAbsolutePathName(sOutput_Template_MySQL_Fullname)
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_Oracle_Fullname), fso.GetAbsolutePathName(sOutput_Template_Oracle_Fullname)
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_SQLite_Fullname), fso.GetAbsolutePathName(sOutput_Template_SQLite_Fullname)
 
 '-- import macros into templates (and changes some variables)
+console.WriteLine  "Updating SQL Server template..."
 '-- Remvoe all method always failure.
 'RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLServer_Fullname) & """ -m ""VBComponent_RemoveAll_Command"" -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLServer_Fullname) & """ -m ""VBComponent_ImportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """ -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLServer_Fullname) & """ -m ""ConfigureTheExcel"" -a ""SQL Server"" -s"
 
+console.WriteLine  "Updating MySQL template..."
 'RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_MySQL_Fullname) & """ -m ""VBComponent_RemoveAll_Command"" -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_MySQL_Fullname) & """ -m ""VBComponent_ImportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """ -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_MySQL_Fullname) & """ -m ""ConfigureTheExcel"" -a ""MySQL"" -s"
 
+console.WriteLine  "Updating Oracle template..."
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_Oracle_Fullname) & """ -m ""VBComponent_ImportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """ -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_Oracle_Fullname) & """ -m ""ConfigureTheExcel"" -a ""Oracle"" -s"
 
+console.WriteLine  "Updating SQLite template..."
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLite_Fullname) & """ -m ""VBComponent_ImportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """ -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLite_Fullname) & """ -m ""ConfigureTheExcel"" -a ""SQLite"" -s"
+
 '-- compress templates
+console.WriteLine  "Zipping the packge..."
 RunExe sZipApp, "a -tzip """ & fso.GetAbsolutePathName(sDeployFile) & """" _
                              & " -r " & fso.GetAbsolutePathName(sOutput_ResourceFolder)
 

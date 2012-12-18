@@ -1,4 +1,11 @@
 Attribute VB_Name = "basUpgrade"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 Public Function ConfigureTheExcel(ByVal databaseName As String)
@@ -38,6 +45,10 @@ Private Sub SetTheExcelTypeVariable(ByVal databaseName As String)
                 Call vbCom.CodeModule.ReplaceLine(i, "Public Const The_Excel_Type                     As String = DBName_MySQL")
             Case DBName_Oracle
                 Call vbCom.CodeModule.ReplaceLine(i, "Public Const The_Excel_Type                     As String = DBName_Oracle")
+            Case DBName_PostgreSQL
+                Call vbCom.CodeModule.ReplaceLine(i, "Public Const The_Excel_Type                     As String = DBName_PostgreSQL")
+            Case DBName_SQLite
+                Call vbCom.CodeModule.ReplaceLine(i, "Public Const The_Excel_Type                     As String = DBName_SQLite")
             Case Else
                 Call vbCom.CodeModule.ReplaceLine(i, "Public Const The_Excel_Type                     As String = The_Excel_Type_Multiple")
             End Select

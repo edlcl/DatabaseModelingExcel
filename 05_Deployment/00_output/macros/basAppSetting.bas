@@ -1,9 +1,16 @@
 Attribute VB_Name = "basAppSetting"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 Public Const APP_NAME                   As String = "Database Modeling Excel"
-Public Const APP_VERSION                As String = "3.2.3"
+Public Const APP_VERSION                As String = "4.0.0"
 
-'-- Sheet part.
+'-- Sheet part
 Public Const Sheet_Index                        As Integer = 1      '-- Index of index sheet
 Public Const Sheet_Update_History               As Integer = 2      '-- Index of update history sheet
 Public Const Sheet_Rule                         As Integer = 3      '-- Index of rule sheet
@@ -33,15 +40,15 @@ Public Const Table_Sheet_Row_TableStatus        As Integer = 1
 Public Const Table_Sheet_Col_TableStatus        As Integer = 2
 
 '-- Table Sheet Value
-Public Const Table_Sheet_PK_Clustered = ""
-Public Const Table_Sheet_PK_NonClustered = "N"
-Public Const Table_Sheet_Index_Clustered = "Y"
-Public Const Table_Sheet_Index_NonClustered = ""
-Public Const Table_Sheet_Index_Unique = ""
-Public Const Table_Sheet_Index_NonUnique = "N"
-Public Const Table_Sheet_Nullable = "Yes"
-Public Const Table_Sheet_NonNullable = "No"
-Public Const Table_Sheet_TableStatus_Ignore = "ignore"
+Public Const Table_Sheet_PK_Clustered           As String = ""
+Public Const Table_Sheet_PK_NonClustered        As String = "N"
+Public Const Table_Sheet_Index_Clustered        As String = "Y"
+Public Const Table_Sheet_Index_NonClustered     As String = ""
+Public Const Table_Sheet_Index_Unique           As String = ""
+Public Const Table_Sheet_Index_NonUnique        As String = "N"
+Public Const Table_Sheet_Nullable               As String = "Yes"
+Public Const Table_Sheet_NonNullable            As String = "No"
+Public Const Table_Sheet_TableStatus_Ignore     As String = "ignore"
 
 '-- UI
 Public Const Table_Sheet_Row_Height             As Integer = 12.75
@@ -49,18 +56,15 @@ Public Const Table_Code_Length                  As Integer = 0
 Public Const Sheet_NameIsTableDesc              As Boolean = False
 
 '-- Marks
-Public Const Mark1                              As String = ","
-Public Const Mark2                              As String = ";"
-Public Const Mark3                              As String = "("
-Public Const Mark4                              As String = ")"
-Public Const Mark5                              As String = " "
 Public Const LINE                               As String = vbCrLf
 
 '-- Databae Type Global variable
-Public gCurentDatabaseType                      As String
-Public Const DBName_SQLServer                   As String = "SQL Server"
+Public Const DBName_DB2                         As String = "DB2"
 Public Const DBName_MySQL                       As String = "MySQL"
 Public Const DBName_Oracle                      As String = "Oracle"
+Public Const DBName_PostgreSQL                  As String = "PostgreSQL"
+Public Const DBName_SQLite                      As String = "SQLite"
+Public Const DBName_SQLServer                   As String = "SQL Server"
 
 '----------- Excel Type Global variable ---------------
 Public Const The_Excel_Type_Multiple            As String = "M"

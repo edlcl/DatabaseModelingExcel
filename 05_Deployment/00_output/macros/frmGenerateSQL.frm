@@ -13,7 +13,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
+
+Private mDatabaseType As String
+Public Property Get DatabaseType() As String
+        DatabaseType = mDatabaseType
+End Property
+Public Property Let DatabaseType(value As String)
+        mDatabaseType = value
+End Property
 
 Private Sub SelectAllItem(booSel As Boolean)
     Dim index      As Integer
@@ -49,49 +64,45 @@ Private Function GetSelectedLogicalTables() As Collection
     Set GetSelectedLogicalTables = objLogicalTables
 End Function
 
-Private Function CopyCreateTableSQL(ByVal withDescription As Boolean) As String
-    Select Case gCurentDatabaseType
-    Case DBName_MySQL
-        Call basSQL_MySQL.Get_SQL_CreateTable(GetSelectedLogicalTables, withDescription)
-    Case DBName_Oracle
-        Call basSQL_Oracle.Get_SQL_CreateTable(GetSelectedLogicalTables, withDescription)
-    Case Else
-        Call basSQL_SQLServer.Get_SQL_CreateTable(GetSelectedLogicalTables, withDescription)
-    End Select
-End Function
+Private Sub CopyCreateTableSQL(ByVal withDescription As Boolean)
+    On Error GoTo Flag_Err
+
+    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLCreateTable(GetSelectedLogicalTables, withDescription)
+    
+    Exit Sub
+Flag_Err:
+    Call MsgBoxEx_Error
+End Sub
 
 Private Sub CopyDropTableSQL()
-    Select Case gCurentDatabaseType
-    Case DBName_MySQL
-        Call basSQL_MySQL.Get_SQL_DropTable(GetSelectedLogicalTables)
-    Case DBName_Oracle
-        Call basSQL_Oracle.Get_SQL_DropTable(GetSelectedLogicalTables)
-    Case Else
-        Call basSQL_SQLServer.Get_SQL_DropTable(GetSelectedLogicalTables)
-    End Select
+    On Error GoTo Flag_Err
+    
+    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLDropTable(GetSelectedLogicalTables)
+   
+    Exit Sub
+Flag_Err:
+    Call MsgBoxEx_Error
 End Sub
 
 Private Sub CopyDropAndCreateTableSQL(ByVal withDescription As Boolean)
-    Select Case gCurentDatabaseType
-    Case DBName_MySQL
-        Call basSQL_MySQL.Get_SQL_DropAndCreateTable(GetSelectedLogicalTables, withDescription)
-    Case DBName_Oracle
-        Call basSQL_Oracle.Get_SQL_DropAndCreateTable(GetSelectedLogicalTables, withDescription)
-    Case Else
-        Call basSQL_SQLServer.Get_SQL_DropAndCreateTable(GetSelectedLogicalTables, withDescription)
-    End Select
+    On Error GoTo Flag_Err
+    
+    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLDropAndCreateTable(GetSelectedLogicalTables, withDescription)
+    
+    Exit Sub
+Flag_Err:
+    Call MsgBoxEx_Error
 End Sub
 
-Private Function CopyCreateTableIfNotExistsSQL() As String
-    Select Case gCurentDatabaseType
-    Case DBName_MySQL
-        Call basSQL_MySQL.Get_SQL_CreateTableIfNotExists(GetSelectedLogicalTables)
-    Case DBName_Oracle
-        Call basSQL_Oracle.Get_SQL_CreateTableIfNotExists(GetSelectedLogicalTables)
-    Case Else
-        Call basSQL_SQLServer.Get_SQL_CreateTableIfNotExists(GetSelectedLogicalTables)
-    End Select
-End Function
+Private Sub CopyCreateTableIfNotExistsSQL()
+    On Error GoTo Flag_Err
+    
+    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLCreateTableIfNotExists(GetSelectedLogicalTables)
+    
+    Exit Sub
+Flag_Err:
+    Call MsgBoxEx_Error
+End Sub
 
 Private Sub cmdCancel_Click()
     Unload Me
@@ -127,8 +138,8 @@ Private Sub cmdSelectNone_Click()
 End Sub
 
 Private Sub UserForm_Initialize()
-    Me.Caption = "Generate for " & gCurentDatabaseType
-    Me.MultiPage1.Pages(0).Caption = gCurentDatabaseType
+    Me.Caption = "Generate for " & DatabaseType
+    Me.MultiPage1.Pages(0).Caption = DatabaseType
     
     Dim iSheet      As Integer
     Dim oSheet      As Worksheet
@@ -140,7 +151,7 @@ Private Sub UserForm_Initialize()
             Set oSheet = ThisWorkbook.Sheets(iSheet)
             If VBA.StrComp( _
                     LCase(TrimEx( _
-                        oSheet.Cells.Item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
+                        oSheet.Cells.item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
                     , Table_Sheet_TableStatus_Ignore) _
                 <> 0 Then
                 .AddItem (ThisWorkbook.Sheets(iSheet).Name)

@@ -1,4 +1,11 @@
 Attribute VB_Name = "basClipboard"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 Private Declare Function CloseClipboard _

@@ -1,5 +1,23 @@
 Attribute VB_Name = "basPublic"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
+
+Public Enum enmConnectionMode
+    ConnectionModeDataSource
+    ConnectionModeConnectionString
+End Enum
+
+Public Enum enmImportMode
+    ImportModeOverwrite
+    ImportModeAlwaysCreateSheet
+    ImportModeAlwaysUpdate
+End Enum
 
 Public Function GetAppVersion() As String
     GetAppVersion = APP_VERSION
@@ -23,7 +41,7 @@ End Function
 Public Function CollectionIsContains(ByRef col As Collection, ByVal key As String) As Boolean
     On Error GoTo Flag_Err
     Dim a
-    a = col.Item(key)
+    a = col.item(key)
     CollectionIsContains = True
     Exit Function
 Flag_Err:

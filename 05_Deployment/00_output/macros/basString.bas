@@ -1,7 +1,14 @@
 Attribute VB_Name = "basString"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Trim a string include space, vblf, vbcr.
 ''' </summary>
@@ -9,7 +16,7 @@ Option Explicit
 ''' <returns>trimed string</returns>
 ''' <remarks>
 ''' </remarks>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Function TrimEx(ByVal text As String) As String
     Dim sRet As String
     sRet = Trim(text)
@@ -32,7 +39,7 @@ Public Function TrimEx(ByVal text As String) As String
     TrimEx = sRet
 End Function
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Format string.
 ''' </summary>
@@ -44,7 +51,7 @@ End Function
 '''     "a{0:description}b{1}c{{0}}"
 '''     {0:description} is a tag; {1} is a tag; {{0}} is {0}, a,b,c is a,b,c
 ''' </remarks>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Function FormatString(ByVal text As String, ParamArray Args()) As String
     Dim newText             As String
     Dim index               As Long
@@ -138,7 +145,7 @@ FLAG_NEXT:
     FormatString = newText
 End Function
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Get string before indicate string
 ''' </summary>
@@ -150,7 +157,7 @@ End Function
 '''     text2 = "("
 '''     return "table"
 ''' </remarks>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Function GetStringBefore(ByVal text As String, ByVal text2 As String) As String
     Dim pos     As Long
     pos = VBA.Strings.InStr(text, text2)
@@ -161,7 +168,7 @@ Public Function GetStringBefore(ByVal text As String, ByVal text2 As String) As 
     GetStringBefore = text
 End Function
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Get string after indicate string
 ''' </summary>
@@ -173,7 +180,7 @@ End Function
 '''     text2 = "("
 '''     return "col1, col2"
 ''' </remarks>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Function GetStringAfter(ByVal text As String, ByVal text2 As String) As String
     Dim pos     As Long
     pos = VBA.Strings.InStr(text, text2)
@@ -184,7 +191,7 @@ Public Function GetStringAfter(ByVal text As String, ByVal text2 As String) As S
     GetStringAfter = text
 End Function
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     split and trim
 ''' </summary>
@@ -193,7 +200,7 @@ End Function
 ''' <returns></returns>
 ''' <remarks>
 ''' </remarks>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Function SplitAndTrim(ByVal text As String, ByVal delimiter As String) As String()
     Dim str()   As String
     Dim index   As Integer

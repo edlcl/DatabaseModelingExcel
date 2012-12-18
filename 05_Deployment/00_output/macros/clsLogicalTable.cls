@@ -7,6 +7,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 Private mTableName As String
@@ -16,11 +23,11 @@ Private mForeignKeys As Collection
 Private mIndexes As Collection
 Private mColumns As Collection
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Property: TableName (String)
 ''' </summary>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Property Get tableName() As String
         tableName = mTableName
 End Property
@@ -28,11 +35,11 @@ Public Property Let tableName(value As String)
         mTableName = value
 End Property
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Property: Description (String)
 ''' </summary>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Property Get Description() As String
         Description = mDescription
 End Property
@@ -40,11 +47,11 @@ Public Property Let Description(value As String)
         mDescription = value
 End Property
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Property: PrimaryKey (clsLogicalPrimaryKey)
 ''' </summary>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Property Get PrimaryKey() As clsLogicalPrimaryKey
     Set PrimaryKey = mPrimaryKey
 End Property
@@ -52,11 +59,11 @@ Public Property Set PrimaryKey(value As clsLogicalPrimaryKey)
     Set mPrimaryKey = value
 End Property
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Property: ForeignKeys (Collection)
 ''' </summary>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Property Get ForeignKeys() As Collection
     Set ForeignKeys = mForeignKeys
 End Property
@@ -64,11 +71,11 @@ Public Property Set ForeignKeys(value As Collection)
     Set mForeignKeys = value
 End Property
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Property: Indexes (Collection)
 ''' </summary>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Property Get Indexes() As Collection
     Set Indexes = mIndexes
 End Property
@@ -76,11 +83,11 @@ Public Property Set Indexes(value As Collection)
     Set mIndexes = value
 End Property
 
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 ''' <summary>
 '''     Property: Columns (Collection)
 ''' </summary>
-''' -----------------------------------------------------------------------------
+''' --------------------------------------------------------
 Public Property Get Columns() As Collection
     Set Columns = mColumns
 End Property
@@ -156,7 +163,7 @@ Public Sub GetIndexexInfoText(ByRef indexText As String, _
                                 Table_Sheet_Index_Clustered, _
                                 Table_Sheet_Index_NonClustered)
         indexUnique = indexUnique _
-                        & IIf(index.IsUnique, _
+                        & IIf(index.isUnique, _
                                 Table_Sheet_Index_Unique, _
                                 Table_Sheet_Index_NonUnique)
     Next

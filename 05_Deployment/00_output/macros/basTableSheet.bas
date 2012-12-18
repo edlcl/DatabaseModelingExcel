@@ -1,4 +1,11 @@
 Attribute VB_Name = "basTableSheet"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 '---------------------------------------------
@@ -15,7 +22,7 @@ Public Function GetAllLogicalTables() As Collection
         Set oSheet = ThisWorkbook.Sheets(iSheet)
         If VBA.StrComp( _
                 LCase(TrimEx( _
-                    oSheet.Cells.Item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
+                    oSheet.Cells.item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
                 , Table_Sheet_TableStatus_Ignore) _
             <> 0 Then
             objLogicalTables.Add GetTableInfoFromWorksheet(ThisWorkbook.Sheets(iSheet))
@@ -33,8 +40,8 @@ Public Function GetTableInfoFromWorksheet(shtCurrent As Worksheet) As clsLogical
     Dim objTable As clsLogicalTable
     
     Set objTable = New clsLogicalTable
-    objTable.tableName = Trim(shtCurrent.Cells.Item(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).text)
-    objTable.Description = Trim(shtCurrent.Cells.Item(Table_Sheet_Row_TableDescription, Table_Sheet_Col_TableDescription).text)
+    objTable.tableName = Trim(shtCurrent.Cells.item(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).text)
+    objTable.Description = Trim(shtCurrent.Cells.item(Table_Sheet_Row_TableDescription, Table_Sheet_Col_TableDescription).text)
    
     Set objTable.PrimaryKey = GetTablePrimaryKey(shtCurrent)
     Set objTable.ForeignKeys = GetTableForeignKeys(shtCurrent)
@@ -58,7 +65,7 @@ Public Function GetTableColumns(shtCurrent As Worksheet) As Collection
     index = 1
     Do While (True)
         '-- Get Column name
-        strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnName).text)
+        strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnName).text)
         
         '-- if Column name is '', finished Columns search
         If Len(strCell) = 0 Then Exit Do
@@ -68,12 +75,12 @@ Public Function GetTableColumns(shtCurrent As Worksheet) As Collection
         objColumns.Add objColumn
         With objColumn
             '-- Get Column information
-            .columnLabel = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnLabel).text)
+            .columnLabel = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnLabel).text)
             .columnName = strCell
-            .dataType = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDataType).text)
-            .Nullable = IIf(UCase(Trim(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNullable).text)) = "YES", True, False)
-            .Default = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDefault).text)
-            .Note = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNote).text)
+            .dataType = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDataType).text)
+            .Nullable = IIf(UCase(Trim(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNullable).text)) = "YES", True, False)
+            .Default = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDefault).text)
+            .Note = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNote).text)
         End With
         index = index + 1
     Loop
@@ -91,10 +98,10 @@ Public Function GetTablePrimaryKey(shtCurrent As Worksheet) As clsLogicalPrimary
     
     Set objPK = New clsLogicalPrimaryKey
     
-    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_Clustered).text)
+    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_Clustered).text)
     With objPK
         '-- Get PK Columns' information
-        .PKcolumns = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_PrimaryKey).text)
+        .PKcolumns = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_PrimaryKey).text)
         
         '-- Get clustered information
         .IsClustered = Not (UCase(Trim(strCell)) = "N")
@@ -121,7 +128,7 @@ Public Function GetTableForeignKeys(shtCurrent As Worksheet) As Collection
     Set objFKs = New Collection
     
     '-- Get Column name
-    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_ForeignKey, Table_Sheet_Col_ForeignKey).text)
+    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_ForeignKey, Table_Sheet_Col_ForeignKey).text)
     '-- Split PK infomation into array, one item is a infomation of foreign key
     strFKArray = Split(strCell, ";")
     
@@ -176,17 +183,17 @@ Public Function GetTableIndexes(shtCurrent As Worksheet) As Collection
     Set objIKs = New Collection
   
     '-- Get Index infomation
-    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_Index, Table_Sheet_Col_Index).text)
+    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_Index, Table_Sheet_Col_Index).text)
     '-- Split index infomation into array, one item is a infomation of index
     strIKArray = Split(strCell, ";")
     
     '-- Get index Unique information
-    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_Index, Table_Sheet_Col_Unique).text)
+    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_Index, Table_Sheet_Col_Unique).text)
     '-- Split index's unique infomation into array, one item is a infomation of index's unique
     strIKUnique = Split(strCell, ";")
     
     '-- Get index Clustered information
-    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_Index, Table_Sheet_Col_Clustered).text)
+    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_Index, Table_Sheet_Col_Clustered).text)
     '-- Split index's Clustered infomation into array, one item is a infomation of index's Clustered
     strIKClustered = Split(strCell, ";")
     
@@ -199,7 +206,7 @@ Public Function GetTableIndexes(shtCurrent As Worksheet) As Collection
         With objIK
             '-- Set default information
             .IsClustered = False
-            .IsUnique = True
+            .isUnique = True
             
             '-- Get index's name and index's columns
             intPos = InStr(1, strIKItem, ",")
@@ -217,7 +224,7 @@ Public Function GetTableIndexes(shtCurrent As Worksheet) As Collection
             If UBound(strIKUnique) >= index Then
                 If UCase(TrimEx(strIKUnique(index))) = "N" Then
                     '-- Not Unique flag
-                    .IsUnique = False
+                    .isUnique = False
                 End If
             End If
             
@@ -240,18 +247,18 @@ End Function
 '---------------------------------------------
 Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
                         ByVal table As clsLogicalTable, _
-                        ByVal clearSheet As Boolean)
+                        ByVal clearExistedData As Boolean)
     
     Dim indexText       As String
     Dim indexClustered  As String
     Dim indexUnique     As String
     
     '-- Set Table Name
-    If clearSheet _
+    If clearExistedData _
         Or sh.Cells(Table_Sheet_Row_TableDescription, _
                 Table_Sheet_Col_TableDescription).text = "" Then
                 
-            sh.Cells.Item(Table_Sheet_Row_TableDescription, _
+            sh.Cells.item(Table_Sheet_Row_TableDescription, _
                 Table_Sheet_Col_TableDescription).value = table.tableName
     End If
     sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value = table.tableName
@@ -322,7 +329,7 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
         
         '-- set Column
         sh.Cells(row, Table_Sheet_Col_ColumnName).Select
-        If clearSheet _
+        If clearExistedData _
             Or sh.Cells(row, Table_Sheet_Col_ColumnLabel).text = "" Then
             sh.Cells(row, Table_Sheet_Col_ColumnLabel).value = tableColumn.columnName
         End If
@@ -330,22 +337,27 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
         sh.Cells(row, Table_Sheet_Col_ColumnDataType).value = tableColumn.dataType
         sh.Cells(row, Table_Sheet_Col_ColumnNullable).value = IIf(tableColumn.Nullable, Table_Sheet_Nullable, Table_Sheet_NonNullable)
         sh.Cells(row, Table_Sheet_Col_ColumnDefault).value = IIf(Len(tableColumn.Default) > 0, "'" & tableColumn.Default, "")
-        If clearSheet Then
+        If clearExistedData Then
             sh.Cells(row, Table_Sheet_Col_ColumnNote).value = ""
         End If
 
         '-- Move next record
         row = row + 1
     Next
-    '-- set left row
-    For row = row To row + 2
-        If IsColumnRow(sh, row) And clearSheet Then
-            SetColumnEmpty sh, row
-        Else
-            Exit For
-        End If
-    Next
-    If clearSheet Then
+    
+    '-- keep 2 blank column rows
+    If clearExistedData Then
+        For row = row To row + 2
+            If IsColumnRow(sh, row) Then
+                SetColumnEmpty sh, row
+            Else
+                Exit For
+            End If
+        Next
+    End If
+    
+    '-- delete left column rows
+    If clearExistedData Then
         row = row - 1
         For row = row To 32667
             If IsColumnRow(sh, row) Then

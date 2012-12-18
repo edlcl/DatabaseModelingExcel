@@ -1,4 +1,11 @@
 Attribute VB_Name = "mdlExcelFunctions"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 '{93E95525-C71D-4753-B7F9-179D9023639B}
 Option Explicit
 
@@ -132,13 +139,20 @@ End Function
 
 Private Function IsThisVBComponent(vbCom As VBComponent) As Boolean
     Dim boo As Boolean
+    Dim index As Integer
     
     boo = False
-    If vbCom.CodeModule.CountOfLines >= 1 Then
-        If vbCom.CodeModule.Lines(1, 1) = "'{93E95525-C71D-4753-B7F9-179D9023639B}" Then
+    For index = 1 To vbCom.CodeModule.CountOfLines
+        If vbCom.CodeModule.Lines(index, 1) = "'{93E95525-C71D-4753-B7F9-179D9023639B}" Then
             boo = True
+            Exit For
         End If
-    End If
+        
+        '-- only search top 10 lines
+        If index >= 10 Then
+            Exit For
+        End If
+    Next
     
     IsThisVBComponent = boo
 End Function

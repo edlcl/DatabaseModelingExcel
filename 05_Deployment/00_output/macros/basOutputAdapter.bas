@@ -1,16 +1,11 @@
 Attribute VB_Name = "basOutputAdapter"
-'--------------------------------------------------------------------------------
-' This file includes following class:
-'  mdlOutputAdapter
-'  enmOutputPlace
-'--------------------------------------------------------------------------------
-' Created By: StevenYang
-' Date:       31/03/2006
-' Modified History:
-' Date     By          Bug ID          Description
-' ------   ----------  ----------      ------------
-'
-'--------------------------------------------------------------------------------
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 Enum enmOutputPlace

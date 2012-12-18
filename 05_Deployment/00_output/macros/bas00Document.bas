@@ -1,8 +1,19 @@
 Attribute VB_Name = "bas00Document"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 '------------------------------------------------------------------------
 '-- Bug fixed list
+'-  <4.0.0>
+'*  Support SQLite
+'   [Oracle DB] Enhance the Import UI.
+'
 '-  <3.2.3>
 '*  Bugs fix:
 '*      [SQL Server] Cannot get FK when the reversing table is in a schema rather than dbo.
@@ -46,21 +57,25 @@ Option Explicit
 '   < Database Type >
 '   * Support SQL Server
 '   * Support MySQL
-'
+'   * Oracle
+'   * SQLite (Only has generating DDL feature)
 '------------------------------------------------------------------------
 
 '------------------------------------------------------------------------
 '-- Future Features
 '   < Database Type >
-'   No other database want to supported.
+'   PostgreSQL
+'   DB2
 '
 '   < Script Capability>
 '   * Support user define type
 '
 '   < Other>
+'   * More DDL features
+'   * Unify importing code
 '   * Generate unified XML
 '   * multiple lines for FK, Index
-'   * Non-macro, should be a msoffice add-ins utility
+'   * Better UI styles/themes for spreadsheet
 '------------------------------------------------------------------------
 
 '------------------------------------------------------------------------
@@ -74,12 +89,14 @@ Option Explicit
 '------------------------------------------------------------------------
 '-- How to support a new database
 '   * Add constant for new databsae in basAppSetting File
-'       Like: Public Const DBName_Oracle                      As String = "Oracle"
+'       E.g. Public Const DBName_Oracle                      As String = "Oracle"
 '   * Add menu item for new database in basToolbar
 '   * Add below code files
-'       basSQL_<NewDatabase>
-'       basReverse_<NewDatabase>
-'       frmReverse_<NewDatabase>
+'       clsDB<NewDatabase>Provider
+'       basImport_<NewDatabase>
+'       frmImport_<NewDatabase>
+'   * Add select case for the database in basPublicDatabase.GetDatabaseProvider
+'   * Update code in basUpgrade.SetTheExcelTypeVariable
 '   * Add a template excel file in 05_Deployment\Resources
 '       DatabaseModeling_Template_<NewDatabase>.xls
 '   * Update build script for update macro for the new template excel file.
@@ -93,3 +110,14 @@ Option Explicit
 '       Get Table(s) schema information
 '------------------------------------------------------------------------
 
+'------------------------------------------------------------------------
+'-- UI Guidelines
+'-- * 8px between a container with the controls inside
+'--   A container is one of Form, MultiPage
+'-- * 4px between controls in horizontal/verticle direction
+'-- * Generatl
+'--   Height is 18px.
+'-- * Button
+'--   Height: 20px, Width: 72 px at least
+
+'------------------------------------------------------------------------

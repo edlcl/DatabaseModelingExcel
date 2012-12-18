@@ -1,4 +1,11 @@
 Attribute VB_Name = "basWorkbookEventHandler"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 Public Sub basWorkbookEventHandler_Activate()
@@ -8,7 +15,7 @@ End Sub
 
 Public Sub basWorkbookEventHandler_BeforeClose(Cancel As Boolean)
     On Error Resume Next
-    Set barDBModeling = CommandBars.Item(BAR_NAME)
+    Set barDBModeling = CommandBars.item(BAR_NAME)
     If Not barDBModeling Is Nothing Then
         Call SetCommandBarButtonsToNothing
         barDBModeling.Delete

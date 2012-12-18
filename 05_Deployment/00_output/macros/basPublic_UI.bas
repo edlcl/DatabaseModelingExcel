@@ -1,4 +1,11 @@
 Attribute VB_Name = "basPublic_UI"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 
 Public Sub SelectAllListBoxItems(ByVal controlListBox As Object, _

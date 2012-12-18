@@ -1,4 +1,11 @@
 Attribute VB_Name = "basToolbar"
+'===========================================================
+'-- Database Modeling Excel
+'===========================================================
+'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- All rights reserved.
+'-- Email: steven.n.yang@gmail.com
+'===========================================================
 Option Explicit
 Public Const BAR_NAME                   As String = "Database Modeling Bar"
 Public Const BAR_BUTTON_ID              As Integer = 10000
@@ -46,6 +53,20 @@ Private Sub InitMenuCollection()
                 "Command_GenerateOracle_Click", _
                 "Generate", _
                 barIndex), "Oracle")
+        Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+                msoControlButton, _
+                "PostgreSQL...", _
+                "", _
+                "Command_GeneratePostgreSQL_Click", _
+                "Generate", _
+                barIndex), "PostgreSQL")
+        Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+                msoControlButton, _
+                "SQLite...", _
+                "", _
+                "Command_GenerateSQLite_Click", _
+                "Generate", _
+                barIndex), "SQLite")
     Case DBName_SQLServer
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
             msoControlButton, _
@@ -68,6 +89,22 @@ Private Sub InitMenuCollection()
             "Generate", _
             "Generate script", _
             "Command_GenerateOracle_Click", _
+            "", _
+            barIndex), "Generate")
+    Case DBName_PostgreSQL
+        Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+            msoControlButton, _
+            "Generate", _
+            "Generate script", _
+            "Command_GeneratePostgreSQL_Click", _
+            "", _
+            barIndex), "Generate")
+    Case DBName_SQLite
+        Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+            msoControlButton, _
+            "Generate", _
+            "Generate script", _
+            "Command_GenerateSQLite_Click", _
             "", _
             barIndex), "Generate")
     End Select
@@ -95,61 +132,76 @@ Private Sub InitMenuCollection()
             "Makeup", _
             barIndex), "Sort Sheets By Sheet Name")
 
-    '-- Reverse menu
+    '-- Import menu
     Select Case The_Excel_Type
     Case The_Excel_Type_Multiple
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
                 msoControlPopup, _
-                "Reverse", _
-                "Reverse database to excel sheet.", _
+                "Import", _
+                "Import database to excel sheet.", _
                 "", _
                 "", _
-                barIndex), "Reverse")
+                barIndex), "Import")
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
                 msoControlButton, _
                 "SQL Server...", _
                 "", _
-                "Command_Reverse_SQLServer_Click", _
-                "Reverse", _
-                barIndex), "Reverse_SQLServer")
+                "Command_Import_SQLServer_Click", _
+                "Import", _
+                barIndex), "Import_SQLServer")
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
                 msoControlButton, _
                 "MySQL...", _
                 "", _
-                "Command_Reverse_MySQL_Click", _
-                "Reverse", _
-                barIndex), "Reverse_MySQL")
+                "Command_Import_MySQL_Click", _
+                "Import", _
+                barIndex), "Import_MySQL")
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
                 msoControlButton, _
                 "Oracle...", _
                 "", _
-                "Command_Reverse_Oracle_Click", _
-                "Reverse", _
-                barIndex), "Reverse_Oracle")
+                "Command_Import_Oracle_Click", _
+                "Import", _
+                barIndex), "Import_Oracle")
+        Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+                msoControlButton, _
+                "PostgreSQL...", _
+                "", _
+                "Command_Import_PostgreSQL_Click", _
+                "Import", _
+                barIndex), "Import_PostgreSQL")
     Case DBName_SQLServer
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
             msoControlButton, _
-            "Reverse", _
-            "Reverse database to excel sheet.", _
-            "Command_Reverse_SQLServer_Click", _
+            "Import", _
+            "Import database to excel sheet.", _
+            "Command_Import_SQLServer_Click", _
             "", _
-            barIndex), "Reverse")
+            barIndex), "Import")
     Case DBName_MySQL
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
             msoControlButton, _
-            "Reverse", _
-            "Reverse database to excel sheet.", _
-            "Command_Reverse_MySQL_Click", _
+            "Import", _
+            "Import database to excel sheet.", _
+            "Command_Import_MySQL_Click", _
             "", _
-            barIndex), "Reverse")
+            barIndex), "Import")
     Case DBName_Oracle
         Call oMenuInfoCollection.Add(GetMenuInfoObject( _
             msoControlButton, _
-            "Reverse", _
-            "Reverse database to excel sheet.", _
-            "Command_Reverse_Oracle_Click", _
+            "Import", _
+            "Import database to excel sheet.", _
+            "Command_Import_Oracle_Click", _
             "", _
-            barIndex), "Reverse")
+            barIndex), "Import")
+    Case DBName_PostgreSQL
+        Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+            msoControlButton, _
+            "Import", _
+            "Import database to excel sheet.", _
+            "Command_Import_PostgreSQL_Click", _
+            "", _
+            barIndex), "Import")
     End Select
 
     Call oMenuInfoCollection.Add(GetMenuInfoObject( _
@@ -185,7 +237,7 @@ Private Function GetMenuInfoObject(ByVal Style As MsoControlType _
         barIndex = barIndex + 1
         oMenu.InstanceIndex = barIndex
     Else
-        Set oParentMenu = oMenuInfoCollection.Item(oMenu.Parent)
+        Set oParentMenu = oMenuInfoCollection.item(oMenu.Parent)
         
         oParentMenu.ChildCount = oParentMenu.ChildCount + 1
         oMenu.InstanceIndex = oParentMenu.ChildCount
@@ -208,7 +260,7 @@ Private Sub CreateCommandBarButtons()
     
     For Each oMenu In oMenuInfoCollection
         If Len(oMenu.Parent) > 0 Then
-            Set oParentMenu = oMenuInfoCollection.Item(oMenu.Parent)
+            Set oParentMenu = oMenuInfoCollection.item(oMenu.Parent)
             
             Set oParentPopup = oParentMenu.Instance
             If oMenu.Style = msoControlPopup Then
@@ -286,7 +338,7 @@ Private Sub GetCommandBarButtonsInstance()
     
     For Each oMenu In oMenuInfoCollection
         If Len(oMenu.Parent) > 0 Then
-            Set oParentMenu = oMenuInfoCollection.Item(oMenu.Parent)
+            Set oParentMenu = oMenuInfoCollection.item(oMenu.Parent)
 
             Set oMenu.Instance = oParentMenu.Instance.Controls(oMenu.InstanceIndex)
         Else '-- first level menu items
@@ -306,10 +358,10 @@ Public Sub AddCommandBar()
     
     On Error Resume Next
     '-- if another excel is already add the bar, we just use it
-    Set barDBModeling = CommandBars.Item(BAR_NAME)
+    Set barDBModeling = CommandBars.item(BAR_NAME)
     If Err.Number = 0 Then
         If barDBModeling.Controls.Count >= 4 Then
-            Set barDBModeling = CommandBars.Item(BAR_NAME)
+            Set barDBModeling = CommandBars.item(BAR_NAME)
             
             GetCommandBarButtonsInstance
         Else
@@ -340,35 +392,51 @@ End Sub
 
 Public Sub DeleteCommandBar()
     On Error Resume Next
-    Set barDBModeling = CommandBars.Item(BAR_NAME)
+    Set barDBModeling = CommandBars.item(BAR_NAME)
     If Not barDBModeling Is Nothing Then
         barDBModeling.Visible = False
     End If
 End Sub
 
 Public Sub Command_GenerateSQLServer_Click()
-    gCurentDatabaseType = DBName_SQLServer
+    frmGenerateSQL.DatabaseType = DBName_SQLServer
     frmGenerateSQL.Show
 End Sub
 
 Public Sub Command_GenerateMySQL_Click()
-    gCurentDatabaseType = DBName_MySQL
+    frmGenerateSQL.DatabaseType = DBName_MySQL
     frmGenerateSQL.Show
 End Sub
 
 Public Sub Command_GenerateOracle_Click()
-    gCurentDatabaseType = DBName_Oracle
+    frmGenerateSQL.DatabaseType = DBName_Oracle
     frmGenerateSQL.Show
 End Sub
 
-Public Sub Command_Reverse_SQLServer_Click()
-    frmReverse_SQLServer.Show
+Public Sub Command_GeneratePostgreSQL_Click()
+    frmGenerateSQL.DatabaseType = DBName_PostgreSQL
+    frmGenerateSQL.Show
 End Sub
-Public Sub Command_Reverse_MySQL_Click()
-    frmReverse_MySQL.Show
+
+Public Sub Command_GenerateSQLite_Click()
+    frmGenerateSQL.DatabaseType = DBName_SQLite
+    frmGenerateSQL.Show
 End Sub
-Public Sub Command_Reverse_Oracle_Click()
-    frmReverse_Oracle.Show
+
+Public Sub Command_Import_SQLServer_Click()
+    frmImport_SQLServer.Show
+End Sub
+
+Public Sub Command_Import_MySQL_Click()
+    frmImport_MySQL.Show
+End Sub
+
+Public Sub Command_Import_Oracle_Click()
+    frmImport_Oracle.Show
+End Sub
+
+Public Sub Command_Import_PostgreSQL_Click()
+    frmImport_PostgreSQL.Show
 End Sub
 
 '---------------------
@@ -446,11 +514,11 @@ Public Sub Command_SetSheetsName_Click()
         
         If Table_Code_Length = 0 Then
             '-- Just name
-            sheetName = Trim(shtCurrent.Cells.Item(iRow, iCol).text)
+            sheetName = Trim(shtCurrent.Cells.item(iRow, iCol).text)
         Else
             '-- like 000.Employee
             sheetName = Format(index, String(Table_Code_Length, "0")) & "." _
-                        & Trim(shtCurrent.Cells.Item(iRow, iCol).text)
+                        & Trim(shtCurrent.Cells.item(iRow, iCol).text)
         End If
         
         If Len(sheetName) > 31 Then
