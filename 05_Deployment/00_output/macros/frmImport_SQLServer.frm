@@ -97,11 +97,11 @@ Private Sub btnRefreshTable_Click()
     Dim sTableName As String
 
     On Error GoTo Flag_Err
-    If Cells.item(Table_Sheet_Row_TableName, _
+    If Cells.Item(Table_Sheet_Row_TableName, _
                     Table_Sheet_Col_TableName).text = "" Then
         sTableName = basImport_SQLServer.SQL_SERVER_TABLE_NAME
     Else
-        sTableName = Cells.item(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).text
+        sTableName = Cells.Item(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).text
     End If
 
     Set conn = basImport_SQLServer.CreateConnection(Trim(cboSQLServer.text), _

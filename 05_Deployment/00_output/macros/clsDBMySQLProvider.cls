@@ -24,10 +24,10 @@ Private Const SP_REMVOE_FK_NAME = "__tmp_removeFK"
 '-------------------------------------
 
 Public Sub clsIDatabaseProvider_GetSQLCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
     Dim sSQL                As String
     Dim sqlCreateFK         As String
-    Dim sqlAddDescription   As String
+    Dim sqlAddComment       As String
     Dim objLogicalTable     As clsLogicalTable
     
     Output_Initialize
@@ -35,7 +35,7 @@ Public Sub clsIDatabaseProvider_GetSQLCreateTable(objLogicalTableCollection As C
     '-- Create tables
     For Each objLogicalTable In objLogicalTableCollection
         Call Get_SQL_CreateTable_Single(objLogicalTable, _
-                                            withColumnDescription, _
+                                            withComment, _
                                             sSQL, _
                                             sqlCreateFK, _
                                             False)
@@ -78,7 +78,7 @@ Public Sub clsIDatabaseProvider_GetSQLDropTable(objLogicalTableCollection As Col
 End Sub
 
 Public Sub clsIDatabaseProvider_GetSQLDropAndCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
     Dim sSQL                As String
     Dim sqlCreateFK         As String
     Dim objLogicalTable     As clsLogicalTable
@@ -108,7 +108,7 @@ Public Sub clsIDatabaseProvider_GetSQLDropAndCreateTable(objLogicalTableCollecti
     '-- Create tables
     For Each objLogicalTable In objLogicalTableCollection
         Call Get_SQL_CreateTable_Single(objLogicalTable, _
-                                            withColumnDescription, _
+                                            withComment, _
                                             sSQL, _
                                             sqlCreateFK, _
                                             False)
@@ -212,7 +212,7 @@ Private Function Get_SQL_Post_RemoveFK() As String
 End Function
 
 Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
-                                ByVal withColumnDescription As Boolean, _
+                                ByVal withComment As Boolean, _
                                 ByRef sqlCreateTable As String, _
                                 ByRef sqlCreateFK As String, _
                                 ByVal IfNotExists As Boolean)
@@ -255,8 +255,8 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
                                 FormatString(IIf(Len(.Default) = 0, "", syntaxDefault), _
                                     SQL_Render_DF_Name(objLogicalTable, objLogicalTable.Columns(i)), _
                                     .Default), _
-                                IIf(withColumnDescription, _
-                                    "COMMENT " & SQL_ToSQL(IIf(Len(.Note) = 0, .columnLabel, .Note)), _
+                                IIf(withComment, _
+                                    "COMMENT " & SQL_ToSQL(IIf(Len(.Comment) = 0, .columnLabel, .Comment)), _
                                     ""))
         End With
     Next
@@ -336,7 +336,7 @@ Private Function Get_SQL_DropTable_Single(objLogicalTable As clsLogicalTable) As
     '-- Return
     Get_SQL_DropTable_Single = FormatString(sSQL, _
                                 objLogicalTable.tableName, _
-                                objLogicalTable.Description)
+                                objLogicalTable.Comment)
 End Function
 
 Private Function SQL_Render_TableName(ByVal tableName As String) As String

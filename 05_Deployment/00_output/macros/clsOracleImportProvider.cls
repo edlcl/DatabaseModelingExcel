@@ -1,4 +1,12 @@
-Attribute VB_Name = "basImport_MySQL"
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
+Attribute VB_Name = "clsOracleImportProvider"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
 '===========================================================
 '-- Database Modeling Excel
 '===========================================================
@@ -6,41 +14,64 @@ Attribute VB_Name = "basImport_MySQL"
 '-- All rights reserved.
 '-- Email: steven.n.yang@gmail.com
 '===========================================================
+'-------------------------------------------
+'-- Oracle Import Provider
+'-------------------------------------------
 Option Explicit
+Implements IImportProvider
 
-'-------------------------------------------
-'-- My SQL Import Module
-'-------------------------------------------
-Public DRIVER_NAME As String
-Public PORT_ID As String
-Public SERVER_NAME As String
-Public SERVER_DATABASE_NAME As String
-Public SERVER_TABLE_NAME As String
-
-Public Function CreateConnection(ByVal server As String, _
-                    ByVal Database As String, _
-                    ByVal user As String, _
-                    ByVal Password As String, _
-                    ByVal driver As String, _
-                    ByVal port As String) As ADODB.Connection
-    Dim conn As ADODB.Connection
-    Set conn = New ADODB.Connection
-
-    If Len(driver) = 0 Then driver = "{MySQL ODBC 5.1 Driver}"
-    If Len(port) = 0 Then port = "3306"
+Public Property Get IImportProvider_Providers() As String()
+    Dim candidateProviders(1 To 2) As String
+    candidateProviders(1) = "MSDAORA.1"
+    candidateProviders(2) = "OraOLEDB.Oracle.1"
     
-    conn.ConnectionString = "Driver=" & Trim(driver) _
-            & ";Server=" & Trim(server) _
-            & ";Port=" & Trim(port) _
-            & ";Database=" & Database _
-            & ";User=" & Trim(user) _
-            & ";Password=" & Password _
-            & ";OPTION=3"
-    
-    Set CreateConnection = conn
+    IImportProvider_Providers = candidateProviders
+End Property
+
+Public Property Get IImportProvider_SupportSelectDatabase() As Boolean
+    IImportProvider_SupportSelectDatabase = False
+End Property
+
+Public Function IImportProvider_GetDatabasesSql() As String
+    IImportProvider_GetDatabasesSql = ""
 End Function
 
-Public Function GetLogicalTable(conn As ADODB.Connection, tableName As String) As clsLogicalTable
+Public Function IImportProvider_GetTablesSql() As String
+    Dim syntax As String
+    
+    syntax = "  SELECT table_name AS name" _
+    & LINE & "    FROM User_Tables T" _
+    & LINE & "ORDER BY T.TABLE_NAME"
+    
+    IImportProvider_GetTablesSql = syntax
+    IImportProvider_GetTablesSql = "SELECT TABLE_NAME FROM User_Tables T" _
+        & LINE & "ORDER BY T.TABLE_NAME"
+End Function
+
+Public Function IImportProvider_GetOptions() As clsImportOptions
+    If basImport.mImportOptions Is Nothing Then
+        Set basImport.mImportOptions = New clsImportOptions
+        basImport.mImportOptions.DataSource = "localhost"
+        basImport.mImportOptions.DataSourceTip = "e.g. localhost:1521/SID"
+    End If
+    Set IImportProvider_GetOptions = basImport.mImportOptions
+End Function
+
+Public Function IImportProvider_CreateConnectionString(ByVal Provider As String, _
+                    ByVal server As String, _
+                    ByVal user As String, _
+                    ByVal Password As String, _
+                    ByVal Database As String) As String
+                    
+    IImportProvider_CreateConnectionString = "Provider=" & Trim(Provider) _
+            & ";Data Source=" & Trim(server) _
+            & ";User ID=" & Trim(user) _
+            & ";Password=" & Password _
+            & ";Persist Security Info=True"
+            
+End Function
+
+Public Function IImportProvider_GetLogicalTable(conn As ADODB.Connection, tableName As String) As clsLogicalTable
     Dim objTable As clsLogicalTable
     Set objTable = New clsLogicalTable
     
@@ -55,28 +86,29 @@ Public Function GetLogicalTable(conn As ADODB.Connection, tableName As String) A
     RenderColumn conn, objTable
     
     '-- Return
-    Set GetLogicalTable = objTable
+    Set IImportProvider_GetLogicalTable = objTable
 End Function
 
 Public Sub RenderPKAndIndex(conn As ADODB.Connection, objTable As clsLogicalTable)
     Dim syntax As String
     
-    syntax = "   SELECT S.TABLE_NAME" _
-    & LINE & "        , S.INDEX_NAME" _
-    & LINE & "        , S.SEQ_IN_INDEX" _
-    & LINE & "        , S.COLUMN_NAME" _
-    & LINE & "        , S.NON_UNIQUE" _
-    & LINE & "        , TC.CONSTRAINT_TYPE" _
-    & LINE & "     FROM information_schema.STATISTICS S" _
-    & LINE & "LEFT JOIN information_schema.TABLE_CONSTRAINTS TC" _
-    & LINE & "       ON S.TABLE_SCHEMA = TC.TABLE_SCHEMA" _
-    & LINE & "      AND S.TABLE_NAME = TC.TABLE_NAME" _
-    & LINE & "      AND S.INDEX_NAME = TC.CONSTRAINT_NAME" _
-    & LINE & "    WHERE S.TABLE_SCHEMA = DATABASE()" _
-    & LINE & "      AND S.TABLE_NAME = {0:table name}" _
-    & LINE & " ORDER BY S.TABLE_NAME" _
-    & LINE & "        , S.INDEX_NAME" _
-    & LINE & "        , S.SEQ_IN_INDEX;"
+    syntax = "SELECT TI.table_name" _
+    & LINE & "     , TI.index_name" _
+    & LINE & "     , TI.uniqueness" _
+    & LINE & "     , TIC.COLUMN_NAME" _
+    & LINE & "     , TIC.COLUMN_POSITION" _
+    & LINE & "     , TC.CONSTRAINT_TYPE" _
+    & LINE & "  FROM User_Indexes TI" _
+    & LINE & "  JOIN user_ind_columns TIC" _
+    & LINE & "    ON  TI.table_name = TIC.Table_Name" _
+    & LINE & "   AND TI.index_name = TIC.Index_Name" _
+    & LINE & "  JOIN user_constraints TC" _
+    & LINE & "    ON TI.table_name = TC.Table_Name" _
+    & LINE & "   AND TI.index_name = TC.Constraint_Name" _
+    & LINE & " WHERE lower(TI.TABLE_NAME) = lower({0:table name})" _
+    & LINE & " ORDER BY TI.TABLE_NAME" _
+    & LINE & "     , TI.INDEX_NAME" _
+    & LINE & "     , TIC.Column_Position"
 
     Dim sSQL                    As String
     sSQL = FormatString(syntax, SQL_ToSQL(objTable.tableName))
@@ -94,7 +126,7 @@ Public Sub RenderPKAndIndex(conn As ADODB.Connection, objTable As clsLogicalTabl
     curIndexName = ""
 
     Do While Not oRs.EOF
-        If oRs("CONSTRAINT_TYPE") & "" = "PRIMARY KEY" Then
+        If oRs("CONSTRAINT_TYPE") = "P" Then
             '-- Primary Key
             If Len(objTable.PrimaryKey.PKcolumns) = 0 Then
                 objTable.PrimaryKey.PKcolumns = oRs("COLUMN_NAME") & ""
@@ -109,7 +141,7 @@ Public Sub RenderPKAndIndex(conn As ADODB.Connection, objTable As clsLogicalTabl
                 objTable.Indexes.Add objIndex
                 
                 objIndex.IsClustered = False
-                objIndex.isUnique = (oRs("NON_UNIQUE") = 0)
+                objIndex.isUnique = (oRs("uniqueness") = "UNIQUE")
 
                 curIndexName = oRs("INDEX_NAME") & ""
             End If
@@ -138,25 +170,25 @@ End Sub
 Public Sub RenderForeignKey(conn As ADODB.Connection, objTable As clsLogicalTable)
     Dim syntax As String
     
-    syntax = "SELECT R.TABLE_NAME" _
-    & LINE & "     , R.CONSTRAINT_NAME" _
-    & LINE & "     , R.UPDATE_RULE" _
-    & LINE & "     , R.DELETE_RULE" _
-    & LINE & "     , R.REFERENCED_TABLE_NAME" _
-    & LINE & "     , K.COLUMN_NAME" _
-    & LINE & "     , K.ORDINAL_POSITION" _
-    & LINE & "     , K.POSITION_IN_UNIQUE_CONSTRAINT" _
-    & LINE & "     , K.REFERENCED_COLUMN_NAME" _
-    & LINE & "  FROM information_schema.REFERENTIAL_CONSTRAINTS R" _
-    & LINE & "  JOIN information_schema.KEY_COLUMN_USAGE K" _
-    & LINE & "    ON R.CONSTRAINT_SCHEMA = K.CONSTRAINT_SCHEMA" _
-    & LINE & "   AND R.TABLE_NAME        = K.TABLE_NAME" _
-    & LINE & "   AND R.CONSTRAINT_NAME   = K.CONSTRAINT_NAME" _
-    & LINE & " WHERE R.CONSTRAINT_SCHEMA = DATABASE()" _
-    & LINE & "   AND R.TABLE_NAME = {0:table name}" _
-    & LINE & " ORDER BY R.TABLE_NAME" _
-    & LINE & "     , R.CONSTRAINT_NAME" _
-    & LINE & "     , K.ORDINAL_POSITION;"
+    syntax = "SELECT UC.TABLE_NAME" _
+    & LINE & "     , UC.CONSTRAINT_NAME" _
+    & LINE & "     , UC.delete_rule" _
+    & LINE & "     , UCC.column_name" _
+    & LINE & "     , UCC.POSITION" _
+    & LINE & "     , UCCR.table_name AS REFERENCED_TABLE_NAME" _
+    & LINE & "     , UCCR.column_name AS REFERENCED_COLUMN_NAME" _
+    & LINE & "  FROM user_constraints UC" _
+    & LINE & "  JOIN user_cons_columns UCC" _
+    & LINE & "    ON UC.TABLE_NAME        = UCC.TABLE_NAME" _
+    & LINE & "   AND UC.CONSTRAINT_NAME   = UCC.CONSTRAINT_NAME" _
+    & LINE & "  JOIN user_cons_columns UCCR" _
+    & LINE & "    ON UC.r_constraint_name   = UCCR.constraint_name" _
+    & LINE & "   AND UCC.position = UCCR.position" _
+    & LINE & " WHERE UC.TABLE_NAME = {0:table name}" _
+    & LINE & "   AND UC.constraint_type = 'R'" _
+    & LINE & " ORDER BY UC.TABLE_NAME" _
+    & LINE & "     , UC.CONSTRAINT_NAME" _
+    & LINE & "     , UCC.POSITION"
 
     Dim sSQL                    As String
     sSQL = FormatString(syntax, SQL_ToSQL(objTable.tableName))
@@ -177,17 +209,14 @@ Public Sub RenderForeignKey(conn As ADODB.Connection, objTable As clsLogicalTabl
             Set objForeignKey = New clsLogicalForeignKey
             objTable.ForeignKeys.Add objForeignKey
 
-            objForeignKey.refTableName = oRs("REFERENCED_TABLE_NAME")
-            If oRs("DELETE_RULE") <> "RESTRICT" Then
+            objForeignKey.refTableName = oRs("REFERENCED_TABLE_NAME") & ""
+            If oRs("DELETE_RULE") <> "NO ACTION" Then
                 objForeignKey.OnDelete = "ON DELETE " & oRs("DELETE_RULE")
             Else
                 objForeignKey.OnDelete = ""
             End If
-            If oRs("UPDATE_RULE") <> "RESTRICT" Then
-                objForeignKey.OnUpdate = "ON DELETE " & oRs("UPDATE_RULE")
-            Else
-                objForeignKey.OnUpdate = ""
-            End If
+          
+            objForeignKey.OnUpdate = ""
             
             curFKName = oRs("CONSTRAINT_NAME") & ""
         End If
@@ -222,21 +251,17 @@ Public Sub RenderColumn(conn As ADODB.Connection, objTable As clsLogicalTable)
     
     syntax = "  SELECT C.TABLE_NAME" _
     & LINE & "       , C.COLUMN_NAME" _
-    & LINE & "       , C.ORDINAL_POSITION" _
-    & LINE & "       , C.COLUMN_TYPE" _
-    & LINE & "       , C.COLUMN_DEFAULT" _
-    & LINE & "       , C.EXTRA" _
-    & LINE & "       , C.IS_NULLABLE" _
-    & LINE & "       , C.COLUMN_COMMENT" _
+    & LINE & "       , C.COLUMN_ID" _
     & LINE & "       , C.DATA_TYPE" _
-    & LINE & "       , C.CHARACTER_MAXIMUM_LENGTH" _
-    & LINE & "       , C.NUMERIC_PRECISION" _
-    & LINE & "       , C.NUMERIC_SCALE" _
-    & LINE & "    FROM information_schema.`COLUMNS` C" _
-    & LINE & "   WHERE C.TABLE_SCHEMA = DATABASE()" _
-    & LINE & "     AND C.TABLE_NAME = {0:table name}" _
+    & LINE & "       , C.NULLABLE" _
+    & LINE & "       , C.CHAR_LENGTH" _
+    & LINE & "       , C.DATA_PRECISION" _
+    & LINE & "       , C.DATA_SCALE" _
+    & LINE & "       , C.DATA_DEFAULT" _
+    & LINE & "    FROM User_Tab_Columns C" _
+    & LINE & "   WHERE C.TABLE_NAME = {0:table name}" _
     & LINE & "ORDER BY C.TABLE_NAME" _
-    & LINE & "       , C.ORDINAL_POSITION;"
+    & LINE & "       , C.COLUMN_ID"
 
     Dim sSQL                    As String
     sSQL = FormatString(syntax, SQL_ToSQL(objTable.tableName))
@@ -253,14 +278,19 @@ Public Sub RenderColumn(conn As ADODB.Connection, objTable As clsLogicalTable)
         Set objColumn = New clsLogicalColumn
         objTable.Columns.Add objColumn
         
-        objColumn.columnName = oRs("COLUMN_NAME")
+        objColumn.columnName = oRs("COLUMN_NAME") & ""
         objColumn.dataType = GetColumnDataType( _
-                                            oRs("COLUMN_TYPE"), _
-                                            oRs("EXTRA") & "")
-        objColumn.Nullable = (oRs("IS_NULLABLE") = "YES")
-        objColumn.Default = oRs("COLUMN_DEFAULT") & ""
-        objColumn.Comment = oRs("COLUMN_COMMENT") & ""
-        
+                                            oRs("DATA_TYPE"), _
+                                            oRs("CHAR_LENGTH") & "", _
+                                            oRs("DATA_PRECISION") & "", _
+                                            oRs("DATA_SCALE") & "")
+        objColumn.Nullable = (oRs("NULLABLE") = "Y")
+        If Not IsNull(oRs("DATA_DEFAULT")) Then
+            objColumn.Default = oRs("DATA_DEFAULT")
+        Else
+            objColumn.Default = ""
+        End If
+
         '-- Move next record
         oRs.MoveNext
     Loop
@@ -276,13 +306,22 @@ Flag_Err:
     Err.Raise Err.Number, Err.Source, Err.Description, Err.HelpFile, Err.HelpContext
 End Sub
 
-Private Function GetColumnDataType(columnType As String, _
-                        extra As String) As String
+Private Function GetColumnDataType(typeName As String, _
+                        maxLength As String, _
+                        precision As String, _
+                        type_scale As String) As String
     Dim dataType As String
 
-    dataType = LCase(columnType)
-    If (Len(extra) > 0) Then
-        dataType = dataType & " " & extra
-    End If
+    dataType = LCase(typeName)
+    Select Case dataType
+        Case "varchar2", "nvarchar2"
+            dataType = dataType & "(" & maxLength & ")"
+        Case "numeric"
+            dataType = dataType & "(" & precision & "," & type_scale & ")"
+    End Select
+
     GetColumnDataType = dataType
 End Function
+
+
+

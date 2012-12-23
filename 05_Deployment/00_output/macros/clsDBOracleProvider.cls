@@ -28,10 +28,10 @@ Private p_colObjectNames As Collection
 '-------------------------------------
 
 Public Sub clsIDatabaseProvider_GetSQLCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
     Dim sSQL                As String
     Dim sqlCreateFK         As String
-    Dim sqlAddDescription   As String
+    Dim sqlAddComment       As String
     Dim objLogicalTable     As clsLogicalTable
     
     Set p_colObjectNames = New Collection
@@ -40,16 +40,16 @@ Public Sub clsIDatabaseProvider_GetSQLCreateTable(objLogicalTableCollection As C
     '-- Create tables
     For Each objLogicalTable In objLogicalTableCollection
         Call Get_SQL_CreateTable_Single(objLogicalTable, _
-                                            withColumnDescription, _
+                                            withComment, _
                                             sSQL, _
                                             sqlCreateFK, _
-                                            sqlAddDescription)
+                                            sqlAddComment)
         Output_WriteLine sSQL & LINE
         If Len(sqlCreateFK) > 0 Then
             Output_WriteLine sqlCreateFK & LINE, 1
         End If
-        If withColumnDescription Then
-            Output_WriteLine sqlAddDescription & LINE, 2
+        If withComment Then
+            Output_WriteLine sqlAddComment & LINE, 2
         End If
     Next
     
@@ -89,10 +89,10 @@ Public Sub clsIDatabaseProvider_GetSQLDropTable(objLogicalTableCollection As Col
 End Sub
 
 Public Sub clsIDatabaseProvider_GetSQLDropAndCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
     Dim sSQL                As String
     Dim sqlCreateFK         As String
-    Dim sqlAddDescription   As String
+    Dim sqlAddComment       As String
     Dim objLogicalTable     As clsLogicalTable
     
     Output_Initialize
@@ -123,16 +123,16 @@ Public Sub clsIDatabaseProvider_GetSQLDropAndCreateTable(objLogicalTableCollecti
     Set p_colObjectNames = New Collection
     For Each objLogicalTable In objLogicalTableCollection
         Call Get_SQL_CreateTable_Single(objLogicalTable, _
-                                            withColumnDescription, _
+                                            withComment, _
                                             sSQL, _
                                             sqlCreateFK, _
-                                            sqlAddDescription)
+                                            sqlAddComment)
         Output_WriteLine sSQL & LINE
         If Len(sqlCreateFK) > 0 Then
             Output_WriteLine sqlCreateFK & LINE, 1
         End If
-        If withColumnDescription Then
-            Output_WriteLine sqlAddDescription & LINE, 2
+        If withComment Then
+            Output_WriteLine sqlAddComment & LINE, 2
         End If
     Next
     
@@ -186,7 +186,7 @@ Private Sub Get_SQL_CreateTableIfNotExists_Single(objLogicalTable As clsLogicalT
                                 
     sqlCreateTable = FormatString(sSQL, _
                     objLogicalTable.tableName, _
-                    objLogicalTable.Description, _
+                    objLogicalTable.Comment, _
                     Replace(sqlCreateTable, "'", "''"))
     
 End Sub
@@ -259,10 +259,10 @@ Private Function Get_SQL_Post_RemoveFK() As String
 End Function
 
 Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
-                                ByVal withColumnDescription As Boolean, _
+                                ByVal withComment As Boolean, _
                                 ByRef sqlCreateTable As String, _
                                 ByRef sqlCreateFK As String, _
-                                ByRef sqlAddDescription As String)
+                                ByRef sqlAddComment As String)
     Dim i               As Integer
     
     Dim syntaxTable         As String
@@ -377,24 +377,24 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
         Next
     End If
     
-    '-- Column description
+    '-- Column comment
     Dim syntaxTableComment          As String
     syntaxTableComment = "COMMENT ON TABLE {0:table name} '{1:table comment}';"
     Dim syntaxColumnComment   As String
-    syntaxColumnComment = "COMMENT ON COLUMN {0:table name}.{1:column name} IS '{2:column note}';"
+    syntaxColumnComment = "COMMENT ON COLUMN {0:table name}.{1:column name} IS '{2:column comment}';"
     
-    sqlAddDescription = FormatString(syntaxTableComment, _
+    sqlAddComment = FormatString(syntaxTableComment, _
                                 objLogicalTable.tableName, _
-                                objLogicalTable.Description)
+                                objLogicalTable.Comment)
     
-    If withColumnDescription Then
+    If withComment Then
         For i = 1 To objLogicalTable.Columns.Count
             With objLogicalTable.Columns(i)
-                sqlAddDescription = sqlAddDescription _
+                sqlAddComment = sqlAddComment _
                         & LINE & FormatString(syntaxColumnComment, _
                             objLogicalTable.tableName, _
                             .columnName _
-                            .Note)
+                            .Comment)
             End With
         Next
     End If
@@ -414,7 +414,7 @@ Private Function Get_SQL_DropTable_Single(objLogicalTable As clsLogicalTable) As
     '-- Return
     Get_SQL_DropTable_Single = FormatString(sSQL, _
                                 objLogicalTable.tableName, _
-                                objLogicalTable.Description)
+                                objLogicalTable.Comment)
 End Function
 
 Private Function Get_SQL_DropTable_Single_Pre() As String
@@ -483,14 +483,14 @@ Private Function RenderObjectName(ByVal ObjectName As String) As String
     If Len(newObjectName) > MAX_OBJECT_NAME_LENGTH Then
         newObjectName = Left(newObjectName, MAX_OBJECT_NAME_LENGTH - 4)
         On Error Resume Next
-        objectNameIndex = p_colObjectNames.item(newObjectName)
+        objectNameIndex = p_colObjectNames.Item(newObjectName)
         If Err.Number <> 0 Then
             Err.Clear
             objectNameIndex = 0
             Call p_colObjectNames.Add(objectNameIndex, newObjectName)
         Else
             objectNameIndex = objectNameIndex + 1
-            p_colObjectNames.item(newObjectName) = objectNameIndex
+            p_colObjectNames.Item(newObjectName) = objectNameIndex
         End If
         newObjectName = newObjectName & Format(objectNameIndex, "0000")
     End If

@@ -15,7 +15,7 @@ End Sub
 
 Public Sub basWorkbookEventHandler_BeforeClose(Cancel As Boolean)
     On Error Resume Next
-    Set barDBModeling = CommandBars.item(BAR_NAME)
+    Set barDBModeling = CommandBars.Item(BAR_NAME)
     If Not barDBModeling Is Nothing Then
         Call SetCommandBarButtonsToNothing
         barDBModeling.Delete

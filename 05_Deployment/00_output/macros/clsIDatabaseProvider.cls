@@ -21,7 +21,7 @@ Option Explicit
 '-----------------------------------------------------------
 
 Public Sub GetSQLCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
 
 End Sub
 
@@ -30,7 +30,7 @@ Public Sub GetSQLDropTable(objLogicalTableCollection As Collection)
 End Sub
 
 Public Sub GetSQLDropAndCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
 End Sub
 
 Public Sub GetSQLCreateTableIfNotExists(objLogicalTableCollection As Collection)

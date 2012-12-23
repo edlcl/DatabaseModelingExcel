@@ -21,7 +21,7 @@ Private mColumnName     As String
 Private mDataType       As String
 Private mNullable       As Boolean
 Private mDefault        As String
-Private mNote           As String
+Private mComment        As String
 
 ''' --------------------------------------------------------
 ''' <summary>
@@ -73,7 +73,7 @@ End Property
     
 ''' --------------------------------------------------------
 ''' <summary>
-'''     Property: Description (String)
+'''     Property: Default (String)
 ''' </summary>
 ''' --------------------------------------------------------
 Public Property Get Default() As String
@@ -85,12 +85,12 @@ End Property
 
 ''' --------------------------------------------------------
 ''' <summary>
-'''     Property: Note (String)
+'''     Property: Comment (String)
 ''' </summary>
 ''' --------------------------------------------------------
-Public Property Get Note() As String
-        Note = mNote
+Public Property Get Comment() As String
+        Comment = mComment
 End Property
-Public Property Let Note(value As String)
-        mNote = value
+Public Property Let Comment(value As String)
+        mComment = value
 End Property

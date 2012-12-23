@@ -20,8 +20,13 @@ Public Function GetConnectionString(connString As String)
     Set conn = New ADODB.Connection
     conn.ConnectionString = connString
     
+    On Error Resume Next
     MSDASCObj.PromptEdit conn
-
+    If Err.Number <> 0 Then
+        MSDASCObj.PromptNew conn
+    End If
+  
+    On Error GoTo 0
     GetConnectionString = conn.ConnectionString
 End Function
 
@@ -45,3 +50,14 @@ Public Function GetDatabaseProvider(Optional DatabaseType As String) As clsIData
         Set GetDatabaseProvider = New clsDBSQLServerProvider
     End Select
 End Function
+
+Public Function GetImportProvider(DatabaseType As String) As IImportProvider
+   
+    Select Case DatabaseType
+    Case DBName_Oracle
+        Set GetImportProvider = New clsOracleImportProvider
+    Case DBName_PostgreSQL
+        Set GetImportProvider = New clsPostgreSQLImportProvider
+    End Select
+End Function
+

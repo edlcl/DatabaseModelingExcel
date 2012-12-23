@@ -41,7 +41,7 @@ End Function
 Public Function CollectionIsContains(ByRef col As Collection, ByVal key As String) As Boolean
     On Error GoTo Flag_Err
     Dim a
-    a = col.item(key)
+    a = col.Item(key)
     CollectionIsContains = True
     Exit Function
 Flag_Err:

@@ -22,7 +22,7 @@ Public Function GetAllLogicalTables() As Collection
         Set oSheet = ThisWorkbook.Sheets(iSheet)
         If VBA.StrComp( _
                 LCase(TrimEx( _
-                    oSheet.Cells.item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
+                    oSheet.Cells.Item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
                 , Table_Sheet_TableStatus_Ignore) _
             <> 0 Then
             objLogicalTables.Add GetTableInfoFromWorksheet(ThisWorkbook.Sheets(iSheet))
@@ -40,8 +40,8 @@ Public Function GetTableInfoFromWorksheet(shtCurrent As Worksheet) As clsLogical
     Dim objTable As clsLogicalTable
     
     Set objTable = New clsLogicalTable
-    objTable.tableName = Trim(shtCurrent.Cells.item(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).text)
-    objTable.Description = Trim(shtCurrent.Cells.item(Table_Sheet_Row_TableDescription, Table_Sheet_Col_TableDescription).text)
+    objTable.tableName = Trim(shtCurrent.Cells.Item(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).text)
+    objTable.Comment = Trim(shtCurrent.Cells.Item(Table_Sheet_Row_TableComment, Table_Sheet_Col_TableComment).text)
    
     Set objTable.PrimaryKey = GetTablePrimaryKey(shtCurrent)
     Set objTable.ForeignKeys = GetTableForeignKeys(shtCurrent)
@@ -65,7 +65,7 @@ Public Function GetTableColumns(shtCurrent As Worksheet) As Collection
     index = 1
     Do While (True)
         '-- Get Column name
-        strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnName).text)
+        strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnName).text)
         
         '-- if Column name is '', finished Columns search
         If Len(strCell) = 0 Then Exit Do
@@ -75,12 +75,12 @@ Public Function GetTableColumns(shtCurrent As Worksheet) As Collection
         objColumns.Add objColumn
         With objColumn
             '-- Get Column information
-            .columnLabel = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnLabel).text)
+            .columnLabel = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnLabel).text)
             .columnName = strCell
-            .dataType = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDataType).text)
-            .Nullable = IIf(UCase(Trim(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNullable).text)) = "YES", True, False)
-            .Default = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDefault).text)
-            .Note = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNote).text)
+            .dataType = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDataType).text)
+            .Nullable = IIf(UCase(Trim(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnNullable).text)) = "YES", True, False)
+            .Default = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnDefault).text)
+            .Comment = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_First_Column + index - 1, Table_Sheet_Col_ColumnComment).text)
         End With
         index = index + 1
     Loop
@@ -98,10 +98,10 @@ Public Function GetTablePrimaryKey(shtCurrent As Worksheet) As clsLogicalPrimary
     
     Set objPK = New clsLogicalPrimaryKey
     
-    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_Clustered).text)
+    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_Clustered).text)
     With objPK
         '-- Get PK Columns' information
-        .PKcolumns = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_PrimaryKey).text)
+        .PKcolumns = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_PrimaryKey, Table_Sheet_Col_PrimaryKey).text)
         
         '-- Get clustered information
         .IsClustered = Not (UCase(Trim(strCell)) = "N")
@@ -128,7 +128,7 @@ Public Function GetTableForeignKeys(shtCurrent As Worksheet) As Collection
     Set objFKs = New Collection
     
     '-- Get Column name
-    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_ForeignKey, Table_Sheet_Col_ForeignKey).text)
+    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_ForeignKey, Table_Sheet_Col_ForeignKey).text)
     '-- Split PK infomation into array, one item is a infomation of foreign key
     strFKArray = Split(strCell, ";")
     
@@ -183,17 +183,17 @@ Public Function GetTableIndexes(shtCurrent As Worksheet) As Collection
     Set objIKs = New Collection
   
     '-- Get Index infomation
-    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_Index, Table_Sheet_Col_Index).text)
+    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_Index, Table_Sheet_Col_Index).text)
     '-- Split index infomation into array, one item is a infomation of index
     strIKArray = Split(strCell, ";")
     
     '-- Get index Unique information
-    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_Index, Table_Sheet_Col_Unique).text)
+    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_Index, Table_Sheet_Col_Unique).text)
     '-- Split index's unique infomation into array, one item is a infomation of index's unique
     strIKUnique = Split(strCell, ";")
     
     '-- Get index Clustered information
-    strCell = TrimEx(shtCurrent.Cells.item(Table_Sheet_Row_Index, Table_Sheet_Col_Clustered).text)
+    strCell = TrimEx(shtCurrent.Cells.Item(Table_Sheet_Row_Index, Table_Sheet_Col_Clustered).text)
     '-- Split index's Clustered infomation into array, one item is a infomation of index's Clustered
     strIKClustered = Split(strCell, ";")
     
@@ -255,11 +255,11 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
     
     '-- Set Table Name
     If clearExistedData _
-        Or sh.Cells(Table_Sheet_Row_TableDescription, _
-                Table_Sheet_Col_TableDescription).text = "" Then
+        Or sh.Cells(Table_Sheet_Row_TableComment, _
+                Table_Sheet_Col_TableComment).text = "" Then
                 
-            sh.Cells.item(Table_Sheet_Row_TableDescription, _
-                Table_Sheet_Col_TableDescription).value = table.tableName
+            sh.Cells.Item(Table_Sheet_Row_TableComment, _
+                Table_Sheet_Col_TableComment).value = table.tableName
     End If
     sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value = table.tableName
     
@@ -303,13 +303,7 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
     For Each tableColumn In table.Columns
         '-- Render column row
         If row > Table_Sheet_Row_First_Column And sh.Cells(row, Table_Sheet_Col_ColumnID).text = "" Then
-            sh.Rows(row - 1 & ":" & row - 1).Select
-            Selection.Copy
-            sh.Rows(row & ":" & row).Select
-            Selection.Insert Shift:=xlDown
-            Application.CutCopyMode = False
-            sh.Cells(row, Table_Sheet_Col_ColumnLabel).value = ""
-            sh.Cells(row, Table_Sheet_Col_ColumnNote).value = ""
+            Call CopyColumnRow(sh, row)
         End If
         sh.Range(GetColumnName(Table_Sheet_Col_ColumnLabel) & row, GetColumnName(Table_Sheet_Col_ColumnDataType - 1) & row).Select
         Selection.Interior.ColorIndex = xlNone
@@ -338,7 +332,7 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
         sh.Cells(row, Table_Sheet_Col_ColumnNullable).value = IIf(tableColumn.Nullable, Table_Sheet_Nullable, Table_Sheet_NonNullable)
         sh.Cells(row, Table_Sheet_Col_ColumnDefault).value = IIf(Len(tableColumn.Default) > 0, "'" & tableColumn.Default, "")
         If clearExistedData Then
-            sh.Cells(row, Table_Sheet_Col_ColumnNote).value = ""
+            sh.Cells(row, Table_Sheet_Col_ColumnComment).value = ""
         End If
 
         '-- Move next record
@@ -348,10 +342,9 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
     '-- keep 2 blank column rows
     If clearExistedData Then
         For row = row To row + 2
-            If IsColumnRow(sh, row) Then
+            If row > Table_Sheet_Row_First_Column Then
+                Call CopyColumnRow(sh, row)
                 SetColumnEmpty sh, row
-            Else
-                Exit For
             End If
         Next
     End If
@@ -372,6 +365,16 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
     sh.Cells(1, 1).Select
 End Sub
 
+Private Sub CopyColumnRow(sh As Worksheet, row As Integer)
+    sh.Rows(row - 1 & ":" & row - 1).Select
+    Selection.Copy
+    sh.Rows(row & ":" & row).Select
+    Selection.Insert Shift:=xlDown
+    Application.CutCopyMode = False
+    sh.Cells(row, Table_Sheet_Col_ColumnLabel).value = ""
+    sh.Cells(row, Table_Sheet_Col_ColumnComment).value = ""
+End Sub
+
 Private Function IsColumnRow(sh As Worksheet, row As Integer) As Boolean
     Dim ma
     Set ma = sh.Range(GetColumnName(Table_Sheet_Col_ColumnLabel) & row).MergeArea
@@ -386,8 +389,7 @@ Private Function SetColumnEmpty(ByVal sh As Worksheet, _
     Selection.Font.Bold = False
     '-- set Column
     sh.Cells(row, Table_Sheet_Col_ColumnLabel).value = ""
-    sh.Cells(row, Table_Sheet_Col_ColumnNote).value = ""
-
+    sh.Cells(row, Table_Sheet_Col_ColumnComment).value = ""
     sh.Cells(row, Table_Sheet_Col_ColumnName).value = ""
     sh.Cells(row, Table_Sheet_Col_ColumnDataType).value = ""
     sh.Cells(row, Table_Sheet_Col_ColumnNullable).value = ""

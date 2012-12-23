@@ -15,7 +15,7 @@ Set console = fsoStandard.GetStandardStream (1)
 '-- Declare Current Version
 Dim sMajorVersion, sMinorVersion, sRevisionNumber, sReleaseType
 '-- MajorVersion is changed for big feature be added.
-sMajorVersion = "4"
+sMajorVersion = "5"
 '-- MinorVersion is changed for normal feature be added.
 sMinorVersion = "0"
 '-- Revision number is changed for bug fix.
@@ -75,6 +75,12 @@ sTemplate_SQLite = "DatabaseModeling_Template_SQLite"
 sTemplate_SQLite_Fullname = sOutput_ResourceFolder & sTemplate_SQLite & ".xls"
 sOutput_Template_SQLite_Fullname = sOutput_ResourceFolder & sTemplate_SQLite & "_" & sVersion & ".xls"
 
+'-- PostgreSQL
+Dim sTemplate_PostgreSQL, sTemplate_PostgreSQL_Fullname, sOutput_Template_PostgreSQL_Fullname
+sTemplate_PostgreSQL = "DatabaseModeling_Template_PostgreSQL"
+sTemplate_PostgreSQL_Fullname = sOutput_ResourceFolder & sTemplate_PostgreSQL & ".xls"
+sOutput_Template_PostgreSQL_Fullname = sOutput_ResourceFolder & sTemplate_PostgreSQL & "_" & sVersion & ".xls"
+
 '-- Declare Constants for compress
 Dim sZipApp
 sZipApp = "C:\Program Files (x86)\7-Zip\7z.exe"
@@ -108,6 +114,7 @@ fso.MoveFile fso.GetAbsolutePathName(sTemplate_SQLServer_Fullname), fso.GetAbsol
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_MySQL_Fullname), fso.GetAbsolutePathName(sOutput_Template_MySQL_Fullname)
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_Oracle_Fullname), fso.GetAbsolutePathName(sOutput_Template_Oracle_Fullname)
 fso.MoveFile fso.GetAbsolutePathName(sTemplate_SQLite_Fullname), fso.GetAbsolutePathName(sOutput_Template_SQLite_Fullname)
+fso.MoveFile fso.GetAbsolutePathName(sTemplate_PostgreSQL_Fullname), fso.GetAbsolutePathName(sOutput_Template_PostgreSQL_Fullname)
 
 '-- import macros into templates (and changes some variables)
 console.WriteLine  "Updating SQL Server template..."
@@ -128,6 +135,10 @@ RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_O
 console.WriteLine  "Updating SQLite template..."
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLite_Fullname) & """ -m ""VBComponent_ImportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """ -s"
 RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_SQLite_Fullname) & """ -m ""ConfigureTheExcel"" -a ""SQLite"" -s"
+
+console.WriteLine  "Updating PostgreSQL template..."
+RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_PostgreSQL_Fullname) & """ -m ""VBComponent_ImportAll_Command"" -a """ & fso.GetAbsolutePathName(sMacroFolder) & """ -s"
+RunVbs "runExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sOutput_Template_PostgreSQL_Fullname) & """ -m ""ConfigureTheExcel"" -a ""PostgreSQL"" -s"
 
 '-- compress templates
 console.WriteLine  "Zipping the packge..."

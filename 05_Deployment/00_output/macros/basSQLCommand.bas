@@ -13,7 +13,7 @@ Public Sub CopyAllCreateTableSQL()
     Call basPublicDatabase.GetDatabaseProvider().GetSQLCreateTable(GetAllLogicalTables(), False)
 End Sub
 
-'-- Copy create all tables with description SQL to clipboard
+'-- Copy create all tables with comment SQL to clipboard
 Public Sub CopyAllCreateTableWithDescriptionSQL()
     Call basPublicDatabase.GetDatabaseProvider().GetSQLCreateTable(GetAllLogicalTables(), True)
 End Sub
@@ -33,7 +33,7 @@ Public Sub CopyAllCreateTableIfNotExistsSQL()
     Call basPublicDatabase.GetDatabaseProvider().GetSQLCreateTableIfNotExists(GetAllLogicalTables())
 End Sub
 
-'-- Copy drop and create all tables with description SQL to clipboard
+'-- Copy drop and create all tables with comment SQL to clipboard
 Public Sub CopyAllDropAndCreateTableWithDescriptionSQL()
     Call basPublicDatabase.GetDatabaseProvider().GetSQLDropAndCreateTable(GetAllLogicalTables(), True)
 End Sub

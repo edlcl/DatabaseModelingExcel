@@ -18,8 +18,8 @@ Option Explicit
 Implements clsIDatabaseProvider
 
 Const SQL_Statement_End = ";"
-Const ObjectNameStart = """"
-Const ObjectNameEnd = """"
+Const IdentifierStart = """"
+Const IdentifierEnd = """"
 Const OutputID_FirstSection = 1
 Const OutputID_SecondSection = 2
 
@@ -29,10 +29,10 @@ Const OutputID_SecondSection = 2
 '-----------------------------------------------------------
 
 Public Sub clsIDatabaseProvider_GetSQLCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
     Dim sSQL                As String
     Dim sqlCreateFK         As String
-    Dim sqlAddDescription   As String
+    Dim sqlAddComment       As String
     Dim objLogicalTable     As clsLogicalTable
     
     Output_Initialize
@@ -40,17 +40,17 @@ Public Sub clsIDatabaseProvider_GetSQLCreateTable(objLogicalTableCollection As C
     '-- Create tables
     For Each objLogicalTable In objLogicalTableCollection
         Call Get_SQL_CreateTable_Single(objLogicalTable, _
-                                            withColumnDescription, _
+                                            withComment, _
                                             sSQL, _
                                             sqlCreateFK, _
-                                            sqlAddDescription, _
+                                            sqlAddComment, _
                                             False)
         Output_WriteLine sSQL & LINE
         If Len(sqlCreateFK) > 0 Then
             Output_WriteLine sqlCreateFK & LINE & SQL_Statement_End, OutputID_FirstSection
         End If
-        If withColumnDescription Then
-            Output_WriteLine sqlAddDescription & LINE & SQL_Statement_End, OutputID_SecondSection
+        If withComment Then
+            Output_WriteLine sqlAddComment & LINE & SQL_Statement_End, OutputID_SecondSection
         End If
     Next
     
@@ -73,10 +73,10 @@ Public Sub clsIDatabaseProvider_GetSQLDropTable(objLogicalTableCollection As Col
 End Sub
 
 Public Sub clsIDatabaseProvider_GetSQLDropAndCreateTable(objLogicalTableCollection As Collection, _
-                            ByVal withColumnDescription As Boolean)
+                            ByVal withComment As Boolean)
     Dim sSQL                As String
     Dim sqlCreateFK         As String
-    Dim sqlAddDescription   As String
+    Dim sqlAddComment       As String
     Dim objLogicalTable     As clsLogicalTable
     
     Output_Initialize
@@ -90,17 +90,17 @@ Public Sub clsIDatabaseProvider_GetSQLDropAndCreateTable(objLogicalTableCollecti
     '-- Create tables
     For Each objLogicalTable In objLogicalTableCollection
         Call Get_SQL_CreateTable_Single(objLogicalTable, _
-                                            withColumnDescription, _
+                                            withComment, _
                                             sSQL, _
                                             sqlCreateFK, _
-                                            sqlAddDescription, _
+                                            sqlAddComment, _
                                             False)
         Output_WriteLine sSQL & LINE
         If Len(sqlCreateFK) > 0 Then
             Output_WriteLine sqlCreateFK & LINE & SQL_Statement_End, 1
         End If
-        If withColumnDescription Then
-            Output_WriteLine sqlAddDescription & LINE & SQL_Statement_End, 2
+        If withComment Then
+            Output_WriteLine sqlAddComment & LINE & SQL_Statement_End, 2
         End If
     Next
     
@@ -134,15 +134,15 @@ Private Sub Get_SQL_CreateTableIfNotExists_Single(objLogicalTable As clsLogicalT
 End Sub
 
 Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
-                                ByVal withColumnDescription As Boolean, _
+                                ByVal withComment As Boolean, _
                                 ByRef sqlCreateTable As String, _
                                 ByRef sqlCreateFK As String, _
-                                ByRef sqlAddDescription As String, _
+                                ByRef sqlAddComment As String, _
                                 ByVal IfNotExists As Boolean)
     Dim i                   As Integer
     Dim syntaxTable         As String
     
-    syntaxTable = "CREATE TABLE {6:if not exists} " & ObjectNameStart & "{0:table name}" & ObjectNameEnd & " (" _
+    syntaxTable = "CREATE TABLE {6:if not exists}" & IdentifierStart & "{0:table name}" & IdentifierEnd & " (" _
                 & "{1:columns definition}" _
                 & "{2:primary key}" _
                 & "{3:unique indexes}" _
@@ -155,7 +155,7 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
     Dim syntaxDefault       As String
     Dim sqlCoumn            As String
         
-    syntaxColumn = "  {0:(i = 1 ? space : ,)}" & ObjectNameStart & "{1:column name}" & ObjectNameEnd & " {2:data type} {3:nullable} {4:default}"
+    syntaxColumn = "  {0:(i = 1 ? space : ,)}" & IdentifierStart & "{1:column name}" & IdentifierEnd & " {2:data type} {3:nullable} {4:default}"
     syntaxDefault = "  CONSTRAINT {0:default name} DEFAULT ({1:default value})"
 
     sqlCoumn = ""
@@ -172,7 +172,7 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
                                     .Default))
         End With
     Next
-    
+
     '-- Primary key SQL
     Dim syntaxPrimaryKey    As String
     Dim sqlPrimaryKey       As String
@@ -208,8 +208,8 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
     Dim syntaxNoUniqueIndex As String
     Dim sqlNoUniqueIndex    As String
     
-    syntaxNoUniqueIndex = "CREATE INDEX {0:index name} ON " _
-                    & ObjectNameStart & "{1:table name}" & ObjectNameEnd _
+    syntaxNoUniqueIndex = "CREATE INDEX {3:if not exists}{0:index name} ON " _
+                    & IdentifierStart & "{1:table name}" & IdentifierEnd _
                     & " {2:columns with brackets}" & SQL_Statement_End
     sqlNoUniqueIndex = ""
     For i = 1 To objLogicalTable.Indexes.Count
@@ -219,7 +219,8 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
                         & LINE & FormatString(syntaxNoUniqueIndex, _
                                     SQL_Render_IK_Name(objLogicalTable, objLogicalTable.Indexes(i)), _
                                     objLogicalTable.tableName, _
-                                    .IKColumns)
+                                    .IKColumns, _
+                                    IIf(IfNotExists, "IF NOT EXISTS ", ""))
             End If
         End With
     Next
@@ -252,17 +253,17 @@ Public Sub Get_SQL_CreateTable_Single(objLogicalTable As clsLogicalTable, _
                         IIf(IfNotExists, "IF NOT EXISTS ", ""))
     
 '    YN: NOT Support
-'   '-- Column description
-'    Dim syntaxColumnDescription   As String
-'    syntaxColumnDescription = "EXECUTE sp_addextendedproperty N'MS_Description', N'{0:column note}', N'user', N'dbo', N'table', N'{1:table name}', N'column', N'{2:column name}'"
-'    sqlAddDescription = ""
+'   '-- Column comment
+'    Dim syntaxColumnComment   As String
+'    syntaxColumnComment = "EXECUTE sp_addextendedproperty N'MS_Description', N'{0:column comment}', N'user', N'dbo', N'table', N'{1:table name}', N'column', N'{2:column name}'"
+'    sqlAddComment = ""
 '
-'    If withColumnDescription Then
+'    If withComment Then
 '        For i = 1 To objLogicalTable.Columns.Count
 '            With objLogicalTable.Columns(i)
-'                sqlAddDescription = sqlAddDescription _
-'                        & LINE & FormatString(syntaxColumnDescription, _
-'                            .Note, _
+'                sqlAddComment = sqlAddComment _
+'                        & LINE & FormatString(syntaxColumnComment, _
+'                            .Comment, _
 '                            objLogicalTable.tableName, _
 '                            .columnName)
 '            End With
@@ -274,12 +275,14 @@ End Sub
 Private Function Get_SQL_DropTable_Single(objLogicalTable As clsLogicalTable) As String
     Dim sSQL            As String
     
-    sSQL = "DROP TABLE IF EXISTS " & ObjectNameStart & "{0:table name}" & ObjectNameEnd & SQL_Statement_End
+    sSQL = "DROP TABLE IF EXISTS " _
+        & IdentifierStart & "{0:table name}" & IdentifierEnd _
+        & SQL_Statement_End
    
     '-- Return
     Get_SQL_DropTable_Single = FormatString(sSQL, _
                                 objLogicalTable.tableName, _
-                                objLogicalTable.Description)
+                                objLogicalTable.Comment)
 End Function
 
 Private Function SQL_Render_TableName(ByVal tableName As String) As String

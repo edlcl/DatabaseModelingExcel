@@ -10,6 +10,13 @@ Option Explicit
 
 '------------------------------------------------------------------------
 '-- Bug fixed list
+'-  <5.0.0>
+'   = New Features =
+'*  Support PostgreSQL
+'   = Fixed Bugs =
+'*  Bug: During importing, the last row disappears in some cases.
+'*  [SQLite] Bug: Not "IF NOT EXISTS" for CREATE INDEX as creating IF NOT EXISTS SQL.
+'
 '-  <4.0.0>
 '*  Support SQLite
 '   [Oracle DB] Enhance the Import UI.

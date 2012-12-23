@@ -22,6 +22,9 @@ Attribute VB_Exposed = False
 '===========================================================
 Option Explicit
 
+'-- Indicates whether the form is initialized.
+Private mInitialized  As Boolean
+
 Private mDatabaseType As String
 Public Property Get DatabaseType() As String
         DatabaseType = mDatabaseType
@@ -64,10 +67,10 @@ Private Function GetSelectedLogicalTables() As Collection
     Set GetSelectedLogicalTables = objLogicalTables
 End Function
 
-Private Sub CopyCreateTableSQL(ByVal withDescription As Boolean)
+Private Sub CopyCreateTableSQL(ByVal withComment As Boolean)
     On Error GoTo Flag_Err
 
-    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLCreateTable(GetSelectedLogicalTables, withDescription)
+    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLCreateTable(GetSelectedLogicalTables, withComment)
     
     Exit Sub
 Flag_Err:
@@ -84,10 +87,10 @@ Flag_Err:
     Call MsgBoxEx_Error
 End Sub
 
-Private Sub CopyDropAndCreateTableSQL(ByVal withDescription As Boolean)
+Private Sub CopyDropAndCreateTableSQL(ByVal withComment As Boolean)
     On Error GoTo Flag_Err
     
-    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLDropAndCreateTable(GetSelectedLogicalTables, withDescription)
+    Call basPublicDatabase.GetDatabaseProvider(DatabaseType).GetSQLDropAndCreateTable(GetSelectedLogicalTables, withComment)
     
     Exit Sub
 Flag_Err:
@@ -111,13 +114,13 @@ End Sub
 Private Sub cmdOK_Click()
     If Me.MultiPage1.SelectedItem.index = 0 Then
         If Me.optCreateTableSQL.value Then
-            Call CopyCreateTableSQL(Me.chkWithFieldDescription.value)
+            Call CopyCreateTableSQL(Me.chkWithComment.value)
             
         ElseIf optDropTableSQL.value = True Then
             Call CopyDropTableSQL
             
         ElseIf optDropAndCreateSQL.value = True Then
-            Call CopyDropAndCreateTableSQL(Me.chkWithFieldDescription.value)
+            Call CopyDropAndCreateTableSQL(Me.chkWithComment.value)
         
         ElseIf Me.optCreateTableIfNotExistsSQL.value Then
             Call CopyCreateTableIfNotExistsSQL
@@ -137,7 +140,10 @@ Private Sub cmdSelectNone_Click()
     Call SelectAllItem(False)
 End Sub
 
-Private Sub UserForm_Initialize()
+Private Sub UserForm_Activate()
+    If mInitialized Then Exit Sub
+    
+    mInitialized = True
     Me.Caption = "Generate for " & DatabaseType
     Me.MultiPage1.Pages(0).Caption = DatabaseType
     
@@ -151,7 +157,7 @@ Private Sub UserForm_Initialize()
             Set oSheet = ThisWorkbook.Sheets(iSheet)
             If VBA.StrComp( _
                     LCase(TrimEx( _
-                        oSheet.Cells.item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
+                        oSheet.Cells.Item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
                     , Table_Sheet_TableStatus_Ignore) _
                 <> 0 Then
                 .AddItem (ThisWorkbook.Sheets(iSheet).Name)
@@ -163,4 +169,9 @@ Private Sub UserForm_Initialize()
     
     '-- Defaut Select ALL
     Call SelectAllItem(True)
+
+End Sub
+
+Private Sub UserForm_Initialize()
+    mInitialized = False
 End Sub

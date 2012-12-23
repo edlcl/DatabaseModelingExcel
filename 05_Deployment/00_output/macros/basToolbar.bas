@@ -237,7 +237,7 @@ Private Function GetMenuInfoObject(ByVal Style As MsoControlType _
         barIndex = barIndex + 1
         oMenu.InstanceIndex = barIndex
     Else
-        Set oParentMenu = oMenuInfoCollection.item(oMenu.Parent)
+        Set oParentMenu = oMenuInfoCollection.Item(oMenu.Parent)
         
         oParentMenu.ChildCount = oParentMenu.ChildCount + 1
         oMenu.InstanceIndex = oParentMenu.ChildCount
@@ -260,7 +260,7 @@ Private Sub CreateCommandBarButtons()
     
     For Each oMenu In oMenuInfoCollection
         If Len(oMenu.Parent) > 0 Then
-            Set oParentMenu = oMenuInfoCollection.item(oMenu.Parent)
+            Set oParentMenu = oMenuInfoCollection.Item(oMenu.Parent)
             
             Set oParentPopup = oParentMenu.Instance
             If oMenu.Style = msoControlPopup Then
@@ -338,7 +338,7 @@ Private Sub GetCommandBarButtonsInstance()
     
     For Each oMenu In oMenuInfoCollection
         If Len(oMenu.Parent) > 0 Then
-            Set oParentMenu = oMenuInfoCollection.item(oMenu.Parent)
+            Set oParentMenu = oMenuInfoCollection.Item(oMenu.Parent)
 
             Set oMenu.Instance = oParentMenu.Instance.Controls(oMenu.InstanceIndex)
         Else '-- first level menu items
@@ -358,10 +358,10 @@ Public Sub AddCommandBar()
     
     On Error Resume Next
     '-- if another excel is already add the bar, we just use it
-    Set barDBModeling = CommandBars.item(BAR_NAME)
+    Set barDBModeling = CommandBars.Item(BAR_NAME)
     If Err.Number = 0 Then
         If barDBModeling.Controls.Count >= 4 Then
-            Set barDBModeling = CommandBars.item(BAR_NAME)
+            Set barDBModeling = CommandBars.Item(BAR_NAME)
             
             GetCommandBarButtonsInstance
         Else
@@ -392,7 +392,7 @@ End Sub
 
 Public Sub DeleteCommandBar()
     On Error Resume Next
-    Set barDBModeling = CommandBars.item(BAR_NAME)
+    Set barDBModeling = CommandBars.Item(BAR_NAME)
     If Not barDBModeling Is Nothing Then
         barDBModeling.Visible = False
     End If
@@ -432,11 +432,13 @@ Public Sub Command_Import_MySQL_Click()
 End Sub
 
 Public Sub Command_Import_Oracle_Click()
-    frmImport_Oracle.Show
+    frmImport.DatabaseType = DBName_Oracle
+    frmImport.Show
 End Sub
 
 Public Sub Command_Import_PostgreSQL_Click()
-    frmImport_PostgreSQL.Show
+    frmImport.DatabaseType = DBName_PostgreSQL
+    frmImport.Show
 End Sub
 
 '---------------------
@@ -500,8 +502,8 @@ Public Sub Command_SetSheetsName_Click()
     
     On Error GoTo Flag_Err
     If Sheet_NameIsTableDesc Then
-        iRow = Table_Sheet_Row_TableDescription
-        iCol = Table_Sheet_Col_TableDescription
+        iRow = Table_Sheet_Row_TableComment
+        iCol = Table_Sheet_Col_TableComment
     Else
         iRow = Table_Sheet_Row_TableName
         iCol = Table_Sheet_Col_TableName
@@ -514,11 +516,11 @@ Public Sub Command_SetSheetsName_Click()
         
         If Table_Code_Length = 0 Then
             '-- Just name
-            sheetName = Trim(shtCurrent.Cells.item(iRow, iCol).text)
+            sheetName = Trim(shtCurrent.Cells.Item(iRow, iCol).text)
         Else
             '-- like 000.Employee
             sheetName = Format(index, String(Table_Code_Length, "0")) & "." _
-                        & Trim(shtCurrent.Cells.item(iRow, iCol).text)
+                        & Trim(shtCurrent.Cells.Item(iRow, iCol).text)
         End If
         
         If Len(sheetName) > 31 Then

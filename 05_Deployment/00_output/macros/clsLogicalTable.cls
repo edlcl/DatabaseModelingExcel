@@ -17,7 +17,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private mTableName As String
-Private mDescription As String
+Private mComment As String
 Private mPrimaryKey As clsLogicalPrimaryKey
 Private mForeignKeys As Collection
 Private mIndexes As Collection
@@ -37,14 +37,14 @@ End Property
 
 ''' --------------------------------------------------------
 ''' <summary>
-'''     Property: Description (String)
+'''     Property: Comment (String)
 ''' </summary>
 ''' --------------------------------------------------------
-Public Property Get Description() As String
-        Description = mDescription
+Public Property Get Comment() As String
+        Comment = mComment
 End Property
-Public Property Let Description(value As String)
-        mDescription = value
+Public Property Let Comment(value As String)
+        mComment = value
 End Property
 
 ''' --------------------------------------------------------

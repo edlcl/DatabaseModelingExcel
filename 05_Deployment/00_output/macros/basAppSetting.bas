@@ -8,7 +8,7 @@ Attribute VB_Name = "basAppSetting"
 '===========================================================
 Option Explicit
 Public Const APP_NAME                   As String = "Database Modeling Excel"
-Public Const APP_VERSION                As String = "4.0.0"
+Public Const APP_VERSION                As String = "5.0.0"
 
 '-- Sheet part
 Public Const Sheet_Index                        As Integer = 1      '-- Index of index sheet
@@ -16,8 +16,8 @@ Public Const Sheet_Update_History               As Integer = 2      '-- Index of
 Public Const Sheet_Rule                         As Integer = 3      '-- Index of rule sheet
 Public Const Sheet_First_Table                  As Integer = 4      '-- Index of first table sheet
 
-Public Const Table_Sheet_Row_TableDescription   As Integer = 2
-Public Const Table_Sheet_Col_TableDescription   As Integer = 7
+Public Const Table_Sheet_Row_TableComment       As Integer = 2
+Public Const Table_Sheet_Col_TableComment       As Integer = 7
 Public Const Table_Sheet_Row_TableName          As Integer = 3
 Public Const Table_Sheet_Col_TableName          As Integer = 7
 Public Const Table_Sheet_Row_PrimaryKey         As Integer = 4
@@ -35,7 +35,7 @@ Public Const Table_Sheet_Col_ColumnName         As Integer = 11
 Public Const Table_Sheet_Col_ColumnDataType     As Integer = 22
 Public Const Table_Sheet_Col_ColumnNullable     As Integer = 28
 Public Const Table_Sheet_Col_ColumnDefault      As Integer = 31
-Public Const Table_Sheet_Col_ColumnNote         As Integer = 34
+Public Const Table_Sheet_Col_ColumnComment      As Integer = 34
 Public Const Table_Sheet_Row_TableStatus        As Integer = 1
 Public Const Table_Sheet_Col_TableStatus        As Integer = 2
 

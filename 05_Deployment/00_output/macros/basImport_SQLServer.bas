@@ -13,7 +13,7 @@ Public SQL_SERVER_DATABASE_NAME As String
 Public SQL_SERVER_TABLE_NAME As String
 
 Public Function CreateConnection(ByVal server As String, _
-                    ByVal database As String, _
+                    ByVal Database As String, _
                     ByVal user As String, _
                     ByVal Password As String) As ADODB.Connection
     Dim conn As ADODB.Connection
@@ -24,14 +24,14 @@ Public Function CreateConnection(ByVal server As String, _
     If Len(user) = 0 Then
         conn.ConnectionString = "Provider=SQLOLEDB" _
                 & ";Integrated Security=SSPI" _
-                & ";initial catalog=" & database _
+                & ";initial catalog=" & Database _
                 & ";Data Source=" & Trim(server) _
                 & ";Connect Timeout=30"
     Else
         conn.ConnectionString = "Provider=SQLOLEDB" _
                 & ";UID=" & user _
                 & ";PWD=" & Password _
-                & ";initial catalog=" & database _
+                & ";initial catalog=" & Database _
                 & ";Data Source=" & Trim(server) _
                 & ";Connect Timeout=30"
     End If
