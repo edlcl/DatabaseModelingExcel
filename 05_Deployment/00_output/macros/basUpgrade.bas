@@ -23,7 +23,7 @@ Private Sub SetTheExcelTypeVariable(ByVal databaseName As String)
     Do While i <= ThisWorkbook.VBProject.VBComponents.Count
         Set vbCom = ThisWorkbook.VBProject.VBComponents(i)
 
-        If vbCom.Name = "basAppSetting" Then
+        If vbCom.name = "basAppSetting" Then
             bFound = True
             Exit Do
         End If

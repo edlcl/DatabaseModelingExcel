@@ -41,7 +41,7 @@ Public Function VBComponent_ExportAll_Command(ByVal a_sPath As String)
         If Len(suffix) > 0 _
             And vbCom.CodeModule.CountOfLines > 1 Then
             
-            vbCom.Export path & "\" & vbCom.Name & suffix
+            vbCom.Export path & "\" & vbCom.name & suffix
         End If
     Next
 End Function
@@ -109,7 +109,7 @@ Public Function VBComponent_CloseAllCodeWindows()
 End Function
 
 Public Function VBComponent_RemoveAll()
-    If MsgBox("Are you want to clear all macros in the file[" & ThisWorkbook.Name & "]?" _
+    If MsgBox("Are you want to clear all macros in the file[" & ThisWorkbook.name & "]?" _
         , vbYesNo + vbQuestion + vbDefaultButton2, Application.Caption) = vbNo _
     Then Exit Function
     

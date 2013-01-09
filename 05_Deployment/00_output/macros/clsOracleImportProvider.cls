@@ -44,8 +44,6 @@ Public Function IImportProvider_GetTablesSql() As String
     & LINE & "ORDER BY T.TABLE_NAME"
     
     IImportProvider_GetTablesSql = syntax
-    IImportProvider_GetTablesSql = "SELECT TABLE_NAME FROM User_Tables T" _
-        & LINE & "ORDER BY T.TABLE_NAME"
 End Function
 
 Public Function IImportProvider_GetOptions() As clsImportOptions
@@ -249,19 +247,26 @@ End Sub
 Public Sub RenderColumn(conn As ADODB.Connection, objTable As clsLogicalTable)
     Dim syntax As String
     
-    syntax = "  SELECT C.TABLE_NAME" _
-    & LINE & "       , C.COLUMN_NAME" _
-    & LINE & "       , C.COLUMN_ID" _
-    & LINE & "       , C.DATA_TYPE" _
-    & LINE & "       , C.NULLABLE" _
-    & LINE & "       , C.CHAR_LENGTH" _
-    & LINE & "       , C.DATA_PRECISION" _
-    & LINE & "       , C.DATA_SCALE" _
-    & LINE & "       , C.DATA_DEFAULT" _
-    & LINE & "    FROM User_Tab_Columns C" _
-    & LINE & "   WHERE C.TABLE_NAME = {0:table name}" _
-    & LINE & "ORDER BY C.TABLE_NAME" _
-    & LINE & "       , C.COLUMN_ID"
+    syntax = "    SELECT C.TABLE_NAME" _
+    & LINE & "         , C.COLUMN_NAME" _
+    & LINE & "         , C.COLUMN_ID" _
+    & LINE & "         , C.DATA_TYPE" _
+    & LINE & "         , C.NULLABLE" _
+    & LINE & "         , C.CHAR_LENGTH" _
+    & LINE & "         , C.DATA_PRECISION" _
+    & LINE & "         , C.DATA_SCALE" _
+    & LINE & "         , C.DATA_DEFAULT" _
+    & LINE & "         , TCC.COMMENTS as ColumnComments" _
+    & LINE & "         , TC.COMMENTS as TableComments" _
+    & LINE & "      FROM User_Tab_Columns C" _
+    & LINE & " LEFT JOIN User_Tab_Comments TC" _
+    & LINE & "        ON TC.TABLE_NAME = C.TABLE_NAME" _
+    & LINE & " LEFT JOIN User_Col_Comments TCC" _
+    & LINE & "        ON TCC.TABLE_NAME = C.TABLE_NAME" _
+    & LINE & "       AND TCC.COLUMN_NAME = C.COLUMN_NAME" _
+    & LINE & "     WHERE C.TABLE_NAME = {0:table name}" _
+    & LINE & "  ORDER BY C.TABLE_NAME" _
+    & LINE & "         , C.COLUMN_ID"
 
     Dim sSQL                    As String
     sSQL = FormatString(syntax, SQL_ToSQL(objTable.tableName))
@@ -290,7 +295,19 @@ Public Sub RenderColumn(conn As ADODB.Connection, objTable As clsLogicalTable)
         Else
             objColumn.Default = ""
         End If
-
+        
+        If Not IsNull(oRs("ColumnComments")) Then
+            objColumn.Comment = oRs("ColumnComments")
+        Else
+            objColumn.Comment = ""
+        End If
+        
+        If Not IsNull(oRs("TableComments")) Then
+            objTable.Comment = oRs("TableComments")
+        Else
+            objTable.Comment = ""
+        End If
+        
         '-- Move next record
         oRs.MoveNext
     Loop

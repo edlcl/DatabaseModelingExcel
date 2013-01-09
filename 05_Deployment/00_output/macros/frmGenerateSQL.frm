@@ -160,7 +160,7 @@ Private Sub UserForm_Activate()
                         oSheet.Cells.Item(Table_Sheet_Row_TableStatus, Table_Sheet_Col_TableStatus).text)) _
                     , Table_Sheet_TableStatus_Ignore) _
                 <> 0 Then
-                .AddItem (ThisWorkbook.Sheets(iSheet).Name)
+                .AddItem (ThisWorkbook.Sheets(iSheet).name)
                 .List(index, 1) = iSheet
                 index = index + 1
             End If

@@ -19,7 +19,7 @@ sMajorVersion = "5"
 '-- MinorVersion is changed for normal feature be added.
 sMinorVersion = "0"
 '-- Revision number is changed for bug fix.
-sRevisionNumber = "0"
+sRevisionNumber = "1"
 
 '-- Release type definition. a: arlfa release; b#: beta release; rc#:realease cadidate; <empty>: product release
 sReleaseType = ""

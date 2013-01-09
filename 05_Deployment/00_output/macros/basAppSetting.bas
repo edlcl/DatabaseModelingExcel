@@ -8,7 +8,7 @@ Attribute VB_Name = "basAppSetting"
 '===========================================================
 Option Explicit
 Public Const APP_NAME                   As String = "Database Modeling Excel"
-Public Const APP_VERSION                As String = "5.0.0"
+Public Const APP_VERSION                As String = "5.0.1"
 
 '-- Sheet part
 Public Const Sheet_Index                        As Integer = 1      '-- Index of index sheet

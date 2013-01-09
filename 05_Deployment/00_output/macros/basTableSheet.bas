@@ -254,14 +254,12 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
     Dim indexUnique     As String
     
     '-- Set Table Name
-    If clearExistedData _
-        Or sh.Cells(Table_Sheet_Row_TableComment, _
-                Table_Sheet_Col_TableComment).text = "" Then
-                
-            sh.Cells.Item(Table_Sheet_Row_TableComment, _
-                Table_Sheet_Col_TableComment).value = table.tableName
-    End If
     sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value = table.tableName
+    
+    If clearExistedData _
+        Or sh.Cells(Table_Sheet_Row_TableComment, Table_Sheet_Col_TableComment).text = "" Then
+        sh.Cells.Item(Table_Sheet_Row_TableComment, Table_Sheet_Col_TableComment).value = IIf(Len(table.Comment) > 0, "'" & table.Comment, "")
+    End If
     
     '-- Set PK
     Call table.GetPrimaryKeyInfoText(indexText, indexClustered)
@@ -331,10 +329,11 @@ Public Sub SetTableInfoToWorksheet(ByVal sh As Worksheet, _
         sh.Cells(row, Table_Sheet_Col_ColumnDataType).value = tableColumn.dataType
         sh.Cells(row, Table_Sheet_Col_ColumnNullable).value = IIf(tableColumn.Nullable, Table_Sheet_Nullable, Table_Sheet_NonNullable)
         sh.Cells(row, Table_Sheet_Col_ColumnDefault).value = IIf(Len(tableColumn.Default) > 0, "'" & tableColumn.Default, "")
-        If clearExistedData Then
-            sh.Cells(row, Table_Sheet_Col_ColumnComment).value = ""
+        If clearExistedData _
+            Or sh.Cells(row, Table_Sheet_Col_ColumnComment).text = "" Then
+            sh.Cells(row, Table_Sheet_Col_ColumnComment).value = IIf(Len(tableColumn.Comment) > 0, "'" & tableColumn.Comment, "")
         End If
-
+        
         '-- Move next record
         row = row + 1
     Next

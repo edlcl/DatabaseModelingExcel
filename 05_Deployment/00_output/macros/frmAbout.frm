@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 '===========================================================
 '-- Database Modeling Excel
 '===========================================================
-'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- Copyright (c) 2013, Yang Ning (Steven)
 '-- All rights reserved.
 '-- Email: steven.n.yang@gmail.com
 '===========================================================
@@ -43,7 +43,7 @@ End Sub
 Private Sub UserForm_Initialize()
     Me.Caption = "About " & APP_NAME
     Me.labName = APP_NAME & " < " & APP_VERSION & " >"
-    Me.txtLicense = "Copyright (c) 2012, Yang Ning (Steven)" _
+    Me.txtLicense = "Copyright (c) 2013, Yang Ning (Steven)" _
         & vbCrLf & "All rights reserved." _
         & vbCrLf & "" _
         & vbCrLf & "Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:" _

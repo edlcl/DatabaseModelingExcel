@@ -2,7 +2,7 @@ Attribute VB_Name = "basPublic"
 '===========================================================
 '-- Database Modeling Excel
 '===========================================================
-'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- Copyright (c) 2013, Yang Ning (Steven)
 '-- All rights reserved.
 '-- Email: steven.n.yang@gmail.com
 '===========================================================
@@ -23,6 +23,23 @@ Public Function GetAppVersion() As String
     GetAppVersion = APP_VERSION
 End Function
 
+Public Function GetColumnIndex(name As String) As Integer
+    Dim colIndex As Integer
+    Dim name1 As String
+    Dim name2 As String
+    
+    colIndex = 0
+    If Len(name) = 1 Then
+        colIndex = Asc(UCase(name)) - Asc("A") + 1
+    ElseIf Len(name) > 1 Then
+        colIndex = (Asc(UCase(Mid(name, 1, 1))) - Asc("A") + 1) * 26 _
+            + Asc(UCase(Mid(name, 2, 1))) - Asc("A") + 1
+    End If
+        
+    '-- return
+    GetColumnIndex = colIndex
+End Function
+
 Public Function GetColumnName(index As Integer) As String
     Dim colName As String
     Dim name1 As Integer
@@ -36,6 +53,17 @@ Public Function GetColumnName(index As Integer) As String
         
     '-- return
     GetColumnName = colName
+End Function
+
+'---------------------
+'-  Get Sheet Name
+'---------------------
+Public Function GetSheetName(index As Integer) As String
+    If (index > ThisWorkbook.Sheets.Count) Or (index < 1) Then
+        GetSheetName = ""
+    Else
+        GetSheetName = ThisWorkbook.Sheets(index).name
+    End If
 End Function
 
 Public Function CollectionIsContains(ByRef col As Collection, ByVal key As String) As Boolean

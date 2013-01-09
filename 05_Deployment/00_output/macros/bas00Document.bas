@@ -2,24 +2,51 @@ Attribute VB_Name = "bas00Document"
 '===========================================================
 '-- Database Modeling Excel
 '===========================================================
-'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- Copyright (c) 2013, Yang Ning (Steven)
 '-- All rights reserved.
 '-- Email: steven.n.yang@gmail.com
 '===========================================================
 Option Explicit
 
 '------------------------------------------------------------------------
-'-- Bug fixed list
-'-  <5.0.0>
-'   = New Features =
-'*  Support PostgreSQL
-'   = Fixed Bugs =
-'*  Bug: During importing, the last row disappears in some cases.
-'*  [SQLite] Bug: Not "IF NOT EXISTS" for CREATE INDEX as creating IF NOT EXISTS SQL.
-'
-'-  <4.0.0>
-'*  Support SQLite
-'   [Oracle DB] Enhance the Import UI.
+'-- ! Features
+'-- * Supported Databases
+'-- ** MySQL
+'-- ** Oracle
+'-- ** PostgreSQL
+'-- ** SQL Server
+'-- ** SQLite (Only support generating DDL feature)
+'-- * Design and maintenance database schema
+'-- * Generate script of database schema using workbook’s content.
+'-- ** Create Tables SQL
+'-- ** Drop Tables SQL
+'-- ** Drop and Create Tables SQL
+'-- ** Create Tables IF Not Exists SQL
+'-- * Support ignore some worksheets when generating SQL scripts
+'-- * Import database schema from database into the workbook
+'-- * Support automatic build process
+'-- * Fine print (A4 paper)
+'--
+'-- ! Enhancement and defect fixed list
+'-- !!  <5.0.1>
+'-- * New Features
+'-- **  Support import Oracle comments from tables and columns.
+'-- **  Support add hyperlinks to the table sheets in the index sheet.
+'-- *  Fixed Defects
+'-- **  Oracle: Error when connect Oracle during importing.
+'-- **  Import: In import dialog, it should display 'Next >' when selecting tables.
+'--
+'-- !!  <5.0.0>
+'-- * New Features
+'-- **  Support PostgreSQL
+'-- *  Fixed Defects
+'-- **  During importing, the last row disappears in some cases.
+'-- **  SQLite: Not "IF NOT EXISTS" for CREATE INDEX as creating IF NOT EXISTS SQL.
+'--
+'-- !!  <4.0.0>
+'-- * New Features
+'-- ** Support SQLite
+'-- ** Oracle: Enhance the Import UI.
 '
 '-  <3.2.3>
 '*  Bugs fix:

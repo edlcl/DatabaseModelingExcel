@@ -73,6 +73,8 @@ Private Sub SetWizardStatus(newPageValue As Integer)
 
     If Me.MultiPageMain.value = PageConnectIndex Then
         btnNext.Caption = ConnectText
+    ElseIf Me.MultiPageMain.value = PageTablesIndex Then
+        btnNext.Caption = NextText
     ElseIf Me.MultiPageMain.value = PageOptionIndex Then
         btnNext.Caption = ImportText
     Else
@@ -315,7 +317,7 @@ Private Sub InitOptionPage()
     For iSheet = Sheet_First_Table To ThisWorkbook.Sheets.Count
         Set shtCurrent = ThisWorkbook.Sheets(iSheet)
         '-- Set Caption = index & tablecaption
-        cboSheet.AddItem shtCurrent.Name
+        cboSheet.AddItem shtCurrent.name
         cboSheet.List(index, 1) = shtCurrent.index
 
         If ThisWorkbook.ActiveSheet.index = shtCurrent.index Then

@@ -2,7 +2,7 @@ Attribute VB_Name = "basToolbar"
 '===========================================================
 '-- Database Modeling Excel
 '===========================================================
-'-- Copyright (c) 2012, Yang Ning (Steven)
+'-- Copyright (c) 2013, Yang Ning (Steven)
 '-- All rights reserved.
 '-- Email: steven.n.yang@gmail.com
 '===========================================================
@@ -119,18 +119,25 @@ Private Sub InitMenuCollection()
             barIndex), "Makeup")
     Call oMenuInfoCollection.Add(GetMenuInfoObject( _
             msoControlButton, _
+            "Add Hyperlinks in The Index Sheet", _
+            "Add Hyperlinks in The Index Sheet", _
+            "Command_AddHyperlinks_Click", _
+            "Makeup", _
+            barIndex), "Add Hyperlinks in The Index Sheet")
+    Call oMenuInfoCollection.Add(GetMenuInfoObject( _
+            msoControlButton, _
             "Set Sheets Name", _
-            "Set sheets name like <TableDescription>", _
+            "Set sheets name like <Table Name>", _
             "Command_SetSheetsName_Click", _
             "Makeup", _
             barIndex), "Set Sheets Name")
     Call oMenuInfoCollection.Add(GetMenuInfoObject( _
             msoControlButton, _
-            "Sort Sheets By Sheet Name", _
-            "Sort Sheets By Sheet Name", _
+            "Sort Sheets by Sheet Names", _
+            "Sort Sheets by Sheet Names", _
             "Command_SortSheetByName_Click", _
             "Makeup", _
-            barIndex), "Sort Sheets By Sheet Name")
+            barIndex), "Sort Sheets by Sheet Names")
 
     '-- Import menu
     Select Case The_Excel_Type
@@ -377,7 +384,7 @@ Public Sub AddCommandBar()
         Set barDBModeling = CommandBars.Add(, , , True)
         On Error Resume Next
         With barDBModeling
-            .Name = BAR_NAME
+            .name = BAR_NAME
             
             Call CreateCommandBarButtons
 
@@ -396,6 +403,10 @@ Public Sub DeleteCommandBar()
     If Not barDBModeling Is Nothing Then
         barDBModeling.Visible = False
     End If
+End Sub
+
+Public Sub Command_AddHyperlinks_Click()
+   frmAddHyperlinks.Show
 End Sub
 
 Public Sub Command_GenerateSQLServer_Click()
@@ -465,8 +476,8 @@ Public Sub Command_SortSheetByName_Click()
             
             If VBA.StrComp(tableName, tableName2, vbBinaryCompare) > 0 Then
                 Call sh2.Move(Before:=sh)
-                sh2.Name = sh2.Name
-                sh.Name = sh.Name
+                sh2.name = sh2.name
+                sh.name = sh.name
                 Set sh = ThisWorkbook.Sheets(iSheet)
                 tableName = Trim(sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value)
             End If
@@ -526,7 +537,7 @@ Public Sub Command_SetSheetsName_Click()
         If Len(sheetName) > 31 Then
             sheetName = Left(sheetName, 31)
         End If
-        shtCurrent.Name = sheetName
+        shtCurrent.name = sheetName
     Next
     
     On Error Resume Next
@@ -537,7 +548,9 @@ Public Sub Command_SetSheetsName_Click()
     Exit Sub
     
 Flag_Err:
-    MsgBox Err.Description, vbInformation, APP_NAME
+    MsgBox "An error occurs when set a sheet name with " & sheetName _
+            & LINE & Err.Description, _
+            vbInformation, APP_NAME
 End Sub
 
 '---------------------
@@ -548,38 +561,29 @@ Public Sub Command_About_Click()
 End Sub
 
 '---------------------
-'-  Get Table Name 2003/9/16Hayashi
+'-  Get Table Name
 '---------------------
 Public Function GetTableName(index As Integer) As String
-    If (index > ThisWorkbook.Sheets.Count) Or (index < 1) Then
-        GetTableName = ""
-        Exit Function
-    End If
+    On Error GoTo Flag_Err
     
     Dim sh As Worksheet
     Set sh = ThisWorkbook.Sheets(index)
+    
     If index < Sheet_First_Table Then
-        GetTableName = sh.Name
-    ElseIf UCase(Mid(sh.Name, Table_Code_Length + 2)) = UCase(sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value) Then
+        GetTableName = sh.name
+    ElseIf Len(Trim(sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value)) > 0 Then
         GetTableName = Trim(sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value)
     Else
         If Table_Code_Length = 0 Then
-            GetTableName = Trim(sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value)
+            GetTableName = sh.name
         Else
-            GetTableName = Mid(sh.Name, Table_Code_Length + 2) & "(" & sh.Cells(Table_Sheet_Row_TableName, Table_Sheet_Col_TableName).value & ")"
+            GetTableName = Mid(sh.name, Table_Code_Length + 2)
         End If
     End If
-End Function
-
-'---------------------
-'-  Get Sheet Name
-'---------------------
-Public Function GetSheetName(index As Integer) As String
-    If (index > ThisWorkbook.Sheets.Count) Or (index < 1) Then
-        GetSheetName = ""
-    Else
-        GetSheetName = ThisWorkbook.Sheets(index).Name
-    End If
+    
+    Exit Function
+Flag_Err:
+    GetTableName = ""
 End Function
 
 '---------------------
@@ -593,45 +597,17 @@ Public Function SetHyperlinks(SheetIndex As Integer, iRow As Integer, iCol As In
     On Error Resume Next
     strSheetName = GetSheetName(SheetIndex)
     
-    Set objCell = ThisWorkbook.Sheets(Sheet_Index).Cells(iRow, iCol)
-    objCell.Hyperlinks.Delete
     If Len(Trim(strSheetName)) = 0 Then
-        strText = ""
+        SetHyperlinks = ""
         
     Else
-        strText = ">>"
+        SetHyperlinks = ">>"
+        
+        Set objCell = ThisWorkbook.Sheets(Sheet_Index).Cells(iRow, iCol)
+        objCell.Hyperlinks.Delete
         Call objCell.Hyperlinks.Add(objCell, "")
         objCell.Hyperlinks(1).SubAddress = "'" & strSheetName & "'!A1"
     End If
-    
-    '-- Return
-    SetHyperlinks = strText
 End Function
 
-'---------------------
-'-  Get Sheet Name With Link
-'---------------------
-Public Function GetSheetNameWithLink(index As Integer, iRow As Integer, iCol As Integer) As String
-    On Error Resume Next
-    Dim strText     As String
-    Dim objCell     As Range
-    Dim strSheetName    As String
-    
-    If (index > ThisWorkbook.Sheets.Count) Or (index < 1) Then
-        strSheetName = ""
-    Else
-        strSheetName = ThisWorkbook.Sheets(index).Name
-    End If
-    
-    Set objCell = ThisWorkbook.Sheets(Sheet_Index).Cells(iRow, iCol)
-    objCell.Hyperlinks.Delete
-    If Len(Trim(strSheetName)) = 0 Then
-    Else
-        Call objCell.Hyperlinks.Add(objCell, "")
-        objCell.Hyperlinks(1).S
-        objCell.Hyperlinks(1).SubAddress = "'" & strSheetName & "'!A1"
-    End If
-    
-    '-- Return
-    GetSheetNameWithLink = strSheetName
-End Function
+
