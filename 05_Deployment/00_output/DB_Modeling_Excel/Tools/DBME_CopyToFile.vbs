@@ -1,13 +1,13 @@
 '------------------------------------------------------------------------------------------------
 '
-' Usage: DBEM_CopyToFile  <--filename|-f ExcelFilename>
+' Usage: DBME_CopyToFile  <--filename|-f ExcelFilename>
 '                                   <--macroname|-m macroName > 
 '                                   [--arguments|-a arg1[,arg2,arg3...]]
 '                                   <--outputfilename|-t OutputFilename>
 '                                   [--verbose|-v]
 '                                   [--help|-?]
 '
-' Example 1: DBEM_CopyToFile  -f "D:\DBModelExcel\DatabaseModeling_Template.xls" -m "CopyAllCreateTableIfNotExistsSQL" -o "D:\DBModelExcel\CreateTables.sql"
+' Example 1: DBME_CopyToFile  -f "D:\DBModelExcel\DatabaseModeling_Template.xls" -m "CopyAllCreateTableIfNotExistsSQL" -o "D:\DBModelExcel\CreateTables.sql"
 '------------------------------------------------------------------------------------------------
 
 ' Force explicit declaration of all variables.
@@ -60,9 +60,9 @@ Dim fso
 Set fso = CreateObject("Scripting.FileSystemObject")
 '-- Run macros
 If bHasMacroArgs Then
-    RunVbs "DBEM_RunExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sSourceFile) & """ -m """ & sMacroName & """ -a """ & aMacroArgs & """"
+    RunVbs "DBME_RunExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sSourceFile) & """ -m """ & sMacroName & """ -a """ & aMacroArgs & """"
 Else
-    RunVbs "DBEM_RunExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sSourceFile) & """ -m """ & sMacroName
+    RunVbs "DBME_RunExcelMacro.vbs", "-f """ & fso.GetAbsolutePathName(sSourceFile) & """ -m """ & sMacroName
 End if    
 DisplayError "After Run macros"
 '-- Save content from clipboard
@@ -123,12 +123,12 @@ Sub Trace(Msg)
 End Sub
 
 Sub DisplayUsage
-	WScript.Echo "Usage: DBEM_CopyToFile <--filename|-f ExcelFilename> " _
+	WScript.Echo "Usage: DBME_CopyToFile <--filename|-f ExcelFilename> " _
         & Vblf & "                     <--macroname|-m macroName > " _
         & Vblf & "                     [--arguments|-a arg1[,arg2,arg3...]] " _
         & Vblf & "                     <--outputfilename|-t OutputFilename> " _
         & Vblf & "                     [--verbose|-v]" _
         & Vblf & "                     [--help|-?]" _
-        & Vblf & "Example 1: DBEM_CopyToFile  -f ""D:\DBModelExcel\DatabaseModeling_Template.xls"" -m ""CopyAllCreateNotExistTableSQL"" -o ""D:\DBModelExcel\CreateTables.sql"""
+        & Vblf & "Example 1: DBME_CopyToFile  -f ""D:\DBModelExcel\DatabaseModeling_Template.xls"" -m ""CopyAllCreateNotExistTableSQL"" -o ""D:\DBModelExcel\CreateTables.sql"""
 	WScript.Quit (1)
 End Sub

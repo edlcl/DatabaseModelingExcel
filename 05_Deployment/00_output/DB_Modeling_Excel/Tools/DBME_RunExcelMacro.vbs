@@ -1,12 +1,12 @@
 '------------------------------------------------------------------------------------------------
 '
-' Usage: DBEM_RunExcelMacro <--filename|-f ExcelFilename>  <--macroname|-m macroName > 
+' Usage: DBME_RunExcelMacro <--filename|-f ExcelFilename>  <--macroname|-m macroName > 
 '                                   [--arguments|-a arg1[,arg2,arg3...]]
 '                                   [--needSaveTheExcelFile|-s]
 '                                   [--verbose|-v]
 '                                   [--help|-?]
 '
-' Example 1: DBEM_RunExcelMacro -f "D:\DBModelExcel\DatabaseModeling_Template.xls" -m "VBComponent_ExportAll" -a "D:\DBModelExcel\macros"
+' Example 1: DBME_RunExcelMacro -f "D:\DBModelExcel\DatabaseModeling_Template.xls" -m "VBComponent_ExportAll" -a "D:\DBModelExcel\macros"
 '------------------------------------------------------------------------------------------------
 
 ' Force explicit declaration of all variables.
@@ -92,12 +92,12 @@ Sub Trace(Msg)
 End Sub
 	
 Sub DisplayUsage
-	WScript.Echo "Usage: DBEM_RunExcelMacro <--filename|-f ExcelFilename> " _
+	WScript.Echo "Usage: DBME_RunExcelMacro <--filename|-f ExcelFilename> " _
         & Vblf & "                     <--macroname|-m macroName > " _
         & Vblf & "                     [--arguments|-a arg1[,arg2,arg3...]] " _
         & Vblf & "                     [--needSaveTheExcelFile|-s] " _
         & Vblf & "                     [--verbose|-v]" _
         & Vblf & "                     [--help|-?]" _
-        & Vblf & "Example 1: DBEM_RunExcelMacro -f ""D:\DBModelExcel\DatabaseModeling_Template.xls"" -m ""VBComponent_ExportAll"" -a ""D:\DBModelExcel\macros"""
+        & Vblf & "Example 1: DBME_RunExcelMacro -f ""D:\DBModelExcel\DatabaseModeling_Template.xls"" -m ""VBComponent_ExportAll"" -a ""D:\DBModelExcel\macros"""
 	WScript.Quit (1)
 End Sub
